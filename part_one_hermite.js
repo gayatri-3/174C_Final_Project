@@ -3,180 +3,7 @@ import {tiny, defs} from './examples/common.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 
-// TODO: you should implement the required classes here or in another file.
-
-class Curve_Shape extends Shape {
-  // curve_function: (t) => vec3
-  constructor(curve_function, sample_count, curve_color=color( 1, 0, 0, 1 )) {
-    super("position", "normal");
-
-    this.material = { shader: new defs.Phong_Shader(), ambient: 1.0, color: curve_color }
-    this.sample_count = sample_count;
-
-    if (curve_function && this.sample_count) {
-      for (let i = 0; i < this.sample_count + 1; i++) {
-        let t = i / this.sample_count;
-        this.arrays.position.push(curve_function(t));
-        this.arrays.normal.push(vec3(0, 0, 0)); // have to add normal to make Phong shader work.
-      }
-    }
-  }
-
-  draw(webgl_manager, uniforms) {
-    // call super with "LINE_STRIP" mode
-    super.draw(webgl_manager, uniforms, Mat4.identity(), this.material, "LINE_STRIP");
-  }
-
-  update(webgl_manager, uniforms, curve_function) {
-    if (curve_function && this.sample_count) {
-      for (let i = 0; i < this.sample_count + 1; i++) {
-        let t = 1.0 * i / this.sample_count;
-        this.arrays.position[i] = curve_function(t);
-      }
-    }
-    // this.arrays.position.forEach((v, i) => v = curve_function(i / this.sample_count));
-    this.copy_onto_graphics_card(webgl_manager.context);
-    // Note: vertex count is not changed.
-    // not tested if possible to change the vertex count.
-  }
-};
-
-const Spline =
-
-    class Spline {
-      constructor(){
-        this.points = [];
-        this.tangents = [];
-        this.size = 0;
-        this.output_text = "";
-      }
-
-      add_points(x, y, z, tx, ty, tz) {
-        this.points.push(vec3(x, y, z));
-        this.tangents.push(vec3(tx, ty, tz));
-        this.size += 1;
-      }
-
-      set_point(i, xVal, yVal, zVal){
-        this.points[i][0] = parseFloat(xVal);
-        this.points[i][1] = parseFloat(yVal);
-        this.points[i][2] = parseFloat(zVal);
-        //console.log(this.points[i].toString());
-      }
-
-      set_tan(i, xTan, yTan, zTan){
-        this.tangents[i][0] = parseFloat(xTan);
-        this.tangents[i][1] = parseFloat(yTan);
-        this.tangents[i][2] = parseFloat(zTan);
-        //console.log(this.tangents[i].toString());
-      }
-
-      /*
-      test part 1 code
-add point  0.0 5.0 0.0   -20.0  0.0   20.0
-add point  0.0 5.0 5.0    20.0  0.0   20.0
-add point  5.0 5.0 5.0    20.0  0.0  -20.0
-add point  5.0 5.0 0.0   -20.0  0.0  -20.0
-add point  0.0 5.0 0.0   -20.0  0.0   20.0
-set point 0 1.0 1.0 1.0
-set tangent 0 1.0 1.0 1.0
-get_arc_length
-      */
-
-
-      h0(t){
-        return 1-t;
-      }
-
-      h1(t){
-        return t;
-      }
-
-      function
-      get_positions(t) {
-
-        const A = Math.floor(t * (this.size - 1));
-        const B = Math.ceil(t * (this.size - 1));
-        const s = (t * (this.size - 1)) % 1.0;
-
-        let pa = this.points[A].copy();
-        let ma = this.tangents[A].copy();
-        let pb = this.points[B].copy();
-        let mb = this.tangents[B].copy();
-        let scaler = 1/(this.size - 1);
-
-        let firstTerm = pa.times(this.h00(s));
-        let secondTerm = ma.times(this.h01(s)).times(scaler);
-        let thirdTerm = pb.times(this.h10(s));
-        let fourthTerm = mb.times(this.h11(s)).times(scaler);
-
-        return firstTerm.plus(secondTerm).plus(thirdTerm).plus(fourthTerm);
-      }
-
-      h00(t) {
-        return 2 * Math.pow(t, 3) - 3 * Math.pow(t, 2) + 1;
-      }
-
-      h01(t) {
-        return Math.pow(t, 3) - 2 * Math.pow(t, 2) + t;
-      }
-
-      h10(t) {
-        return -2 * Math.pow(t, 3) + 3*Math.pow(t, 2);
-      }
-
-      h11(t) {
-        return Math.pow(t, 3) - Math.pow(t, 2);
-      }
-
-      function
-      _get_arc_length(){
-        let length = 0;
-
-        let sample_cnt = 1000;
-        let prev = this.get_positions(0);
-        for (let i = 1; i < sample_cnt + 1; i++){
-          const t = i/sample_cnt;
-          const curr = this.get_positions(t);
-          length += curr.minus(prev).norm()
-          prev = curr
-        }
-        return length;
-      }
-
-      function
-      get_size(){
-        return this.size;
-      }
-
-      function
-      get_points(){
-        return this.points;
-      }
-
-      function
-      get_tangents(){
-        return this.tangents;
-      }
-
-      function
-      set_text(inputText){
-        this.output_text = inputText;
-      }
-
-      function
-      get_text(){
-        return this.output_text;
-      }
-};
-
-
-function
-remove_commas(inputString){
-  const valuesArray = inputString.split(',');
-  const formattedString = valuesArray.join(' ');
-  return formattedString;
-}
+import {Curve_Shape, Spline, Particle, Spring, Simulation} from "./SplineCurve.js";
 
 export
 const Part_one_hermite_base = defs.Part_one_hermite_base =
@@ -223,7 +50,43 @@ const Part_one_hermite_base = defs.Part_one_hermite_base =
 
         // TODO: you should create a Spline class instance
         this.spline = new Spline();
+        this.spline.add_point(2.0, 8.0, 0.0, -10.0, 0.0, 20.0);
+        this.spline.add_point(4.0, 7.0, 5.0, 20.0, 0.0, 20.0);
+        this.spline.add_point(6.0, 6.0, 3.0, 20.0, 0.0, -10.0);
+        this.spline.add_point(5.0, 9.0, 9.0, -20.0, 0.0, -20.0);
+        this.spline.add_point(2.0, 8.0, 0.0, -20.0, 0.0, 20.0);
+
         this.sample_cnt = 1000;
+        this.t_step = 0.01;
+        this.t_sim = 0;
+
+        const curve_fn = (t) => this.spline.get_position(t);
+        this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
+
+        this.sim = new Simulation();
+        const num = 1;
+        let y_val = 8;
+        for(let i = 0; i < num; i++) {
+          let particle = new Particle();
+          particle.mass = 1.0;
+          particle.pos = vec3(2, y_val-i, 0);
+          particle.vel = vec3(0, 0, 0);
+          this.sim.particles.push(particle);
+        }
+
+        // for(let i = 0; i < num -1; i++) {
+        //   let spring = new Spring();
+        //   spring.particle_1 = this.sim.particles[i];
+        //   spring.particle_2 = this.sim.particles[i+1];
+        //   spring.ks = 5;
+        //   spring.kd = 0.1;
+        //   spring.rest_length = 1;
+        //   this.sim.springs.push(spring);
+        // }
+
+        this.sim.ground_ks = 5000;
+        this.sim.ground_kd = 1;
+        this.sim.g_acc = vec3(0, -9.8, 0);
 
       }
 
@@ -323,44 +186,31 @@ export class Part_one_hermite extends Part_one_hermite_base
 
     // TODO: you should draw spline here.
     this.curve.draw(caller, this.uniforms);
+
+    this.sim.draw(caller, this.uniforms, this.shapes, this.materials);
+
+    let dt = 1/60;
+    dt = Math.min(1/30, dt);
+
+    let t_next = this.t_sim + dt;
+    while(this.t_sim < t_next) {
+      let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 40),2));
+      this.sim.update(this.t_step, point1);
+      console.log(point1);
+      this.t_sim += this.t_step;
+    }
   }
 
   render_controls()
   {                                 // render_controls(): Sets up a panel of interactive HTML elements, including
     // buttons with key bindings for affecting this scene, and live info readouts.
-    this.control_panel.innerHTML += "Part One:";
-    this.new_line();
-    this.key_triggered_button( "Parse Commands", [], this.parse_commands );
-    this.new_line();
-    this.key_triggered_button( "Draw", [], this.update_scene );
-    this.new_line();
-    this.key_triggered_button( "Load", [], this.load_spline );
-    this.new_line();
-    this.key_triggered_button( "Export", [], this.export_spline );
-    this.new_line();
 
-    /* Some code for your reference
-    this.key_triggered_button( "Copy input", [ "c" ], function() {
-      let text = document.getElementById("input").value;
-      console.log(text);
-      document.getElementById("output").value = text;
-    } );
+    this.control_panel.innerHTML += "Part Two:";
     this.new_line();
-    this.key_triggered_button( "Relocate", [ "r" ], function() {
-      let text = document.getElementById("input").value;
-      const words = text.split(' ');
-      if (words.length >= 3) {
-        const x = parseFloat(words[0]);
-        const y = parseFloat(words[1]);
-        const z = parseFloat(words[2]);
-        this.ball_location = vec3(x, y, z)
-        document.getElementById("output").value = "success";
-      }
-      else {
-        document.getElementById("output").value = "invalid input";
-      }
-    } );
-     */
+    this.key_triggered_button( "Config", [], this.parse_commands );
+    this.new_line();
+    this.key_triggered_button( "Run", [], this.start );
+    this.new_line();
   }
 
   parse_commands() {
@@ -413,23 +263,182 @@ export class Part_one_hermite extends Part_one_hermite_base
     this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
   }
 
-  load_spline() {
-    //TODO:
-    //this.parse_commands();
 
-    let return_text = String(this.spline.get_size());
-    for (let i = 0; i < this.spline.get_size(); i++){
-      const vectorPosI = this.spline.get_points()[i].toString();
-      const vectorTanI = this.spline.get_tangents()[i].toString();
-      return_text += "\n" + remove_commas(vectorPosI) + " " + remove_commas(vectorTanI);
-    }
-    this.spline.set_text(return_text);
-    document.getElementById("output").value = "load_spline";
-  }
-
-
-  export_spline() {
-    document.getElementById("output").value = this.spline.get_text();
-    //TODO
-  }
 }
+
+/*
+
+class Curve_Shape extends Shape {
+  // curve_function: (t) => vec3
+  constructor(curve_function, sample_count, curve_color=color( 1, 0, 0, 1 )) {
+    super("position", "normal");
+
+    this.material = { shader: new defs.Phong_Shader(), ambient: 1.0, color: curve_color }
+    this.sample_count = sample_count;
+
+    if (curve_function && this.sample_count) {
+      for (let i = 0; i < this.sample_count + 1; i++) {
+        let t = i / this.sample_count;
+        this.arrays.position.push(curve_function(t));
+        this.arrays.normal.push(vec3(0, 0, 0)); // have to add normal to make Phong shader work.
+      }
+    }
+  }
+
+  draw(webgl_manager, uniforms) {
+    // call super with "LINE_STRIP" mode
+    super.draw(webgl_manager, uniforms, Mat4.identity(), this.material, "LINE_STRIP");
+  }
+
+  update(webgl_manager, uniforms, curve_function) {
+    if (curve_function && this.sample_count) {
+      for (let i = 0; i < this.sample_count + 1; i++) {
+        let t = 1.0 * i / this.sample_count;
+        this.arrays.position[i] = curve_function(t);
+      }
+    }
+    // this.arrays.position.forEach((v, i) => v = curve_function(i / this.sample_count));
+    this.copy_onto_graphics_card(webgl_manager.context);
+    // Note: vertex count is not changed.
+    // not tested if possible to change the vertex count.
+  }
+};
+
+const Spline =
+
+    class Spline {
+      constructor(){
+        this.points = [];
+        this.tangents = [];
+        this.size = 0;
+        this.output_text = "";
+      }
+
+      add_points(x, y, z, tx, ty, tz) {
+        this.points.push(vec3(x, y, z));
+        this.tangents.push(vec3(tx, ty, tz));
+        this.size += 1;
+      }
+
+      set_point(i, xVal, yVal, zVal){
+        this.points[i][0] = parseFloat(xVal);
+        this.points[i][1] = parseFloat(yVal);
+        this.points[i][2] = parseFloat(zVal);
+        //console.log(this.points[i].toString());
+      }
+
+      set_tan(i, xTan, yTan, zTan){
+        this.tangents[i][0] = parseFloat(xTan);
+        this.tangents[i][1] = parseFloat(yTan);
+        this.tangents[i][2] = parseFloat(zTan);
+        //console.log(this.tangents[i].toString());
+      }
+
+
+      // test part 1 code
+      // add point  0.0 5.0 0.0   -20.0  0.0   20.0
+      // add point  0.0 5.0 5.0    20.0  0.0   20.0
+      // add point  5.0 5.0 5.0    20.0  0.0  -20.0
+      // add point  5.0 5.0 0.0   -20.0  0.0  -20.0
+      // add point  0.0 5.0 0.0   -20.0  0.0   20.0
+      // set point 0 1.0 1.0 1.0
+      // set tangent 0 1.0 1.0 1.0
+      // get_arc_length
+
+
+
+      h0(t){
+        return 1-t;
+      }
+
+      h1(t){
+        return t;
+      }
+
+      function
+      get_positions(t) {
+
+        const A = Math.floor(t * (this.size - 1));
+        const B = Math.ceil(t * (this.size - 1));
+        const s = (t * (this.size - 1)) % 1.0;
+
+        let pa = this.points[A].copy();
+        let ma = this.tangents[A].copy();
+        let pb = this.points[B].copy();
+        let mb = this.tangents[B].copy();
+        let scaler = 1/(this.size - 1);
+
+        let firstTerm = pa.times(this.h00(s));
+        let secondTerm = ma.times(this.h01(s)).times(scaler);
+        let thirdTerm = pb.times(this.h10(s));
+        let fourthTerm = mb.times(this.h11(s)).times(scaler);
+
+        return firstTerm.plus(secondTerm).plus(thirdTerm).plus(fourthTerm);
+      }
+
+      h00(t) {
+        return 2 * Math.pow(t, 3) - 3 * Math.pow(t, 2) + 1;
+      }
+
+      h01(t) {
+        return Math.pow(t, 3) - 2 * Math.pow(t, 2) + t;
+      }
+
+      h10(t) {
+        return -2 * Math.pow(t, 3) + 3*Math.pow(t, 2);
+      }
+
+      h11(t) {
+        return Math.pow(t, 3) - Math.pow(t, 2);
+      }
+
+      function
+      _get_arc_length(){
+        let length = 0;
+
+        let sample_cnt = 1000;
+        let prev = this.get_positions(0);
+        for (let i = 1; i < sample_cnt + 1; i++){
+          const t = i/sample_cnt;
+          const curr = this.get_positions(t);
+          length += curr.minus(prev).norm()
+          prev = curr
+        }
+        return length;
+      }
+
+      function
+      get_size(){
+        return this.size;
+      }
+
+      function
+      get_points(){
+        return this.points;
+      }
+
+      function
+      get_tangents(){
+        return this.tangents;
+      }
+
+      function
+      set_text(inputText){
+        this.output_text = inputText;
+      }
+
+      function
+      get_text(){
+        return this.output_text;
+      }
+    };
+
+
+function
+remove_commas(inputString){
+  const valuesArray = inputString.split(',');
+  const formattedString = valuesArray.join(' ');
+  return formattedString;
+}
+
+*/
