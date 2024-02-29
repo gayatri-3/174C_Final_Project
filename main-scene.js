@@ -30,6 +30,7 @@ import {Transforms_Sandbox_Base, Transforms_Sandbox}
     from "./examples/transforms-sandbox.js";
 
 import {Part_one_hermite} from "./part_one_hermite.js";
+import { Bumper_cars } from './bumper_cars.js';
 
 Object.assign (defs,
     {Minimal_Webgl_Demo},
@@ -47,7 +48,7 @@ Object.assign (defs,
 
 // ******************** SELECT THE DEMO TO DISPLAY:
 
-const main_scene        = Part_one_hermite; // default
+const main_scene        = Bumper_cars; // default
 const additional_scenes = [];
 
 export {main_scene, additional_scenes, defs};
