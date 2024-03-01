@@ -83,7 +83,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         // Don't define more than one blueprint for the same thing here.
         this.shapes = { 'box'  : new defs.Cube(),
           'ball' : new defs.Subdivision_Sphere( 4 ),
-          'axis' : new defs.Axis_Arrows()};
+          'axis' : new defs.Axis_Arrows(),
+          'sky': new defs.Subdivision_Sphere(4),
+        };
 
         this.curve_fn = null;
         this.sample_cnt = 0;
@@ -100,7 +102,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.plastic = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) }
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
         // this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
-
+        this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
+        this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
         this.ball_location = vec3(1, 1, 1);
         this.ball_radius = 0.25;
 
@@ -185,6 +188,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // draw axis arrows.
         // this.shapes.axis.draw(caller, this.uniforms, Mat4.identity(), this.materials.rgb);
+        let sky_transform = Mat4.identity().times(Mat4.scale(50,50,50));
+        this.shapes.sky.draw(caller, this.uniforms, sky_transform, this.materials.sky);
+        let floor_transform = Mat4.identity().times(Mat4.scale(50, 0.01, 50));
+        this.shapes.box.draw(caller, this.uniforms, floor_transform, this.materials.ground);
       }
     }
 
@@ -228,8 +235,8 @@ export class Bumper_cars extends Bumper_cars_base
     const t = this.t = this.uniforms.animation_time/1000;
 
     // !!! Draw ground
-    let floor_transform = Mat4.translation(0, 0, 0).times(Mat4.scale(10, 0.01, 10));
-    this.shapes.box.draw( caller, this.uniforms, floor_transform, { ...this.materials.plastic, color: yellow } );
+    // let floor_transform = Mat4.translation(0, 0, 0).times(Mat4.scale(10, 0.01, 10));
+    // this.shapes.box.draw( caller, this.uniforms, floor_transform, { ...this.materials.plastic, color: yellow } );
 
     // !!! Draw ball (for reference)
     let ball_transform = Mat4.translation(this.ball_location[0], this.ball_location[1], this.ball_location[2])
