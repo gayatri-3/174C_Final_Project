@@ -109,11 +109,31 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // TODO: you should create a Spline class instance
         this.spline = new Spline();
-        this.spline.add_point(2.0, 8.0, 0.0, -10.0, 0.0, 20.0);
-        this.spline.add_point(4.0, 7.0, 5.0, 20.0, 0.0, 20.0);
-        this.spline.add_point(6.0, 6.0, 3.0, 20.0, 0.0, -10.0);
-        this.spline.add_point(5.0, 9.0, 9.0, -20.0, 0.0, -20.0);
-        this.spline.add_point(2.0, 8.0, 0.0, -20.0, 0.0, 20.0);
+        this.spline_left = new Spline();
+        this.spline_right = new Spline();
+        // this.spline.add_point(2.0, 8.0, 0.0, -10.0, 0.0, 20.0);
+        // this.spline.add_point(4.0, 7.0, 5.0, 20.0, 0.0, 20.0);
+        // this.spline.add_point(6.0, 6.0, 3.0, 20.0, 0.0, -10.0);
+        // this.spline.add_point(5.0, 9.0, 9.0, -20.0, 0.0, -20.0);
+        // this.spline.add_point(2.0, 8.0, 0.0, -20.0, 0.0, 20.0);
+
+        this.spline_left.add_point(0.0, 5.0, 0.0, -20.0, 0.0, 20.0);
+        this.spline_left.add_point(0.0, 5.0, 5.0, 20.0, 0.0, 20.0);
+        this.spline_left.add_point(5.0, 5.0, 5.0, 20.0, 0.0, -20.0);
+        this.spline_left.add_point(5.0, 5.0, 0.0, -20.0, 0.0, -20.0);
+        this.spline_left.add_point(0.0, 5.0, 0.0, -20.0, 0.0, 20.0);
+
+        this.spline_right.add_point(-1, 5.0, -1, -24.0, 0.0, 24.0);
+        this.spline_right.add_point(-1, 5.0, 6, 24.0, 0.0, 24.0);
+        this.spline_right.add_point(6, 5.0, 6, 24.0, 0.0, -24.0);
+        this.spline_right.add_point(6, 5.0, -1, -24.0, 0.0, -24.0);
+        this.spline_right.add_point(-1, 5.0, -1, -24.0, 0.0, 24.0);
+
+        this.spline.add_point(-0.5, 5.0, -0.5, -22.0, 0.0, 22.0);
+        this.spline.add_point(-0.5, 5.0, 5.5, 22.0, 0.0, 22.0);
+        this.spline.add_point(5.5, 5.0, 5.5, 22.0, 0.0, -22.0);
+        this.spline.add_point(5.5, 5.0, -0.5, -22.0, 0.0, -22.0);
+        this.spline.add_point(-0.5, 5.0, -0.5, -22.0, 0.0, 22.0);
 
         this.sample_cnt = 1000;
         this.t_step = 0.01;
@@ -121,6 +141,12 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         const curve_fn = (t) => this.spline.get_position(t);
         this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
+
+        const curve_left = (t) => this.spline_left.get_position(t);
+        this.curve_left = new Curve_Shape(curve_left, this.sample_cnt);
+
+        const curve_right = (t) => this.spline_right.get_position(t);
+        this.curve_right = new Curve_Shape(curve_right, this.sample_cnt);
 
         this.sim = new Simulation();
         const num = 1;
@@ -172,14 +198,15 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           // perspective() are field of view, aspect ratio, and distances to the near plane and far plane.
 
           // !!! Camera changed here
-          Shader.assign_camera( Mat4.look_at (vec3 (10, 10, 10), vec3 (0, 0, 0), vec3 (0, 1, 0)), this.uniforms );
+          Shader.assign_camera( Mat4.look_at (vec3 (20, 20, 20), vec3 (0, 0, 0), vec3 (0, 1, 0)), this.uniforms );
         }
         this.uniforms.projection_transform = Mat4.perspective( Math.PI/4, caller.width/caller.height, 1, 100 );
 
         // *** Lights: *** Values of vector or point lights.  They'll be consulted by
         // the shader when coloring shapes.  See Light's class definition for inputs.
         const t = this.t = this.uniforms.animation_time/1000;
-        const angle = Math.sin( t );
+        //const angle = Math.sin( t );
+        const angle = Math.sin( 0 );
 
         // const light_position = Mat4.rotation( angle,   1,0,0 ).times( vec4( 0,-1,1,0 ) ); !!!
         // !!! Light changed here
@@ -243,8 +270,6 @@ export class Bumper_cars extends Bumper_cars_base
         .times(Mat4.scale(this.ball_radius, this.ball_radius, this.ball_radius));
     this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
 
-    this.curve.draw(caller, this.uniforms);
-
     // add some fluctuation
     if (this.curve_fn && this.sample_cnt === this.curve.sample_count) {
       this.curve.update(caller, this.uniforms,
@@ -252,7 +277,32 @@ export class Bumper_cars extends Bumper_cars_base
     }
 
     // TODO: you should draw spline here.
+    //Rollercoaster
     this.curve.draw(caller, this.uniforms);
+    this.curve_left.draw(caller, this.uniforms);
+    this.curve_right.draw(caller, this.uniforms);
+
+    let points_right = this.spline_right.get_points();
+    let points_left = this.spline_left.get_points();
+    //draw track
+    for (let i = 0; i < this.spline.get_size(); i++){
+      const p1 = points_left[i];
+      const p2 = points_right[i];
+      const len = (p2.minus(p1)).norm();
+      const center = (p1.plus(p2)).times(0.5);
+      let model_transform = Mat4.scale(0.05, len/2, 0.05);
+      const p = p1.minus(p2).normalized();
+      let v = vec3(0, 1, 0);
+      if(Math.abs(v.cross(p).norm()) < 0.1){
+        v = vec3(0, 0, 1);
+        model_transform = Mat4.scale(0.05, 0.05, len/2);
+      }
+      const w = v.cross(p).normalized();
+      const theta = Math.acos(v.dot(p));
+      model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
+      model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
+      this.shapes.box.draw(caller, this.uniforms, model_transform, { ...this.materials.metal, color:color(1, 0, 0, 1)})
+    }
 
     this.sim.draw(caller, this.uniforms, this.shapes, this.materials);
 

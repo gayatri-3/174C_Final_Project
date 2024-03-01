@@ -40,6 +40,9 @@ export class Spline {
         return this.size;
     }
 
+    get_points(){
+        return this.points;
+    }
     get_position(t) {
 
         const A = Math.floor(t * (this.size - 1));
@@ -198,9 +201,14 @@ export class Simulation {
 
         for(const p of this.particles) {
             const pos = p.pos;
-            let model_transform = Mat4.scale(0.2, 0.2, 0.2);
-            model_transform.pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
-            shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: blue});
+            // let model_transform = Mat4.scale(0.2, 0.2, 0.2);
+            // model_transform.pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
+            //shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: blue});
+            let model_transform = Mat4.identity().pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
+            model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
+            model_transform = model_transform.times(Mat4.translation(0, 1, 0));
+            shapes.box.draw( webgl_manager, uniform, model_transform, { ...materials.plastic, color: blue } );
+
         }
 
         for(const s of this.springs) {
