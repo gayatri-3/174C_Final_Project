@@ -312,7 +312,7 @@ export class Bumper_cars extends Bumper_cars_base
 
     let t_next = this.t_sim + dt;
     while(this.t_sim < t_next) {
-      let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 40),2));
+      let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 5),2));
       this.sim.update(this.t_step, point1);
       // console.log(point1);
       this.t_sim += this.t_step;
