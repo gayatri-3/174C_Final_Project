@@ -4,7 +4,7 @@ import { Shape_From_File } from './examples/obj-file-demo.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 
-import {Curve_Shape, Spline, Particle, Spring, Simulation} from "./SplineCurve.js";
+import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation} from "./SplineCurve.js";
 
 const Car = class Car{
   constructor(x, y, z, vx = 0, vy = 0, vz = 0){
@@ -182,7 +182,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.collided = false;
 
         //particle system simulation init
-        this.particle_simulation = new Simulation();
+        this.particle_simulation = new Particle_Simulation();
 
         let n = 5;
         for(let i = 0; i < n; i++) {
@@ -323,6 +323,7 @@ export class Bumper_cars extends Bumper_cars_base
 
     // draw particle system
     this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
+    //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
     console.log(this.particle_simulation);
 
     let dt = 1/60;
