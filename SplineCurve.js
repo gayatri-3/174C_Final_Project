@@ -236,3 +236,106 @@ export class Simulation {
     }
 }
 
+export class Particle_Simulation {
+    constructor() {
+        this.particles = [];
+        this.springs = [];
+        this.g_acc = 0;
+        this.ground_ks = 0;
+        this.ground_kd = 0;
+    }
+
+    update(dt, point1) {
+
+        let first = true;
+
+        for(const p of this.particles) {
+            if(first) {
+                first = false;
+            }
+            else {
+                p.ext_force = this.g_acc.times(p.mass);
+                this.calculate_ground_forces(p);
+            }
+        }
+
+        for(const s of this.springs) {
+            s.update();
+        }
+
+        first = true;
+        for(const p of this.particles) {
+            if(first) {
+                first = false;
+                p.vel = point1.minus(p.pos).times(1/dt);
+                p.pos = point1;
+            }
+            else {
+                p.update(dt);
+            }
+        }
+
+    }
+
+    calculate_ground_forces(p) {
+        let pg = vec3(0, 0, 0);
+        let n = vec3(0, 1, 0);
+        let left = n.times(n.dot(pg.minus(p.pos))).times(this.ground_ks);
+        let right = n.times(n.dot(p.vel)).times(this.ground_kd);
+        p.ext_force = p.ext_force.plus(left.minus(right));
+    }
+
+    draw(webgl_manager, uniform, shapes, materials) {
+        const blue = color(0, 0, 1, 1);
+        const red = color( 1, 0, 0, 1);
+
+        for(const p of this.particles) {
+            const pos = p.pos;
+            let model_transform = Mat4.identity().pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
+
+            let body_model_transform = model_transform.times(Mat4.translation(0, 1, 0));
+            body_model_transform = body_model_transform.times(Mat4.scale(.5, .5, .5));
+
+            let head_model_transform = model_transform.times(Mat4.translation(0, 1.75, 0));
+            head_model_transform = head_model_transform.times(Mat4.scale(.3, .3, .3));
+
+            let left_hand = model_transform.times(Mat4.translation(0.25, 1.25, 0.5));
+            left_hand = left_hand.times(Mat4.scale(0.2, 0.2, 0.2));
+
+            let right_hand = left_hand.times(Mat4.translation(0, 0, -4.5));
+
+
+            const white = color(1, 1, 1, 1);
+            shapes.ball.draw(webgl_manager, uniform, body_model_transform, {...materials.plastic, color: white});
+            shapes.ball.draw(webgl_manager, uniform, head_model_transform, {...materials.plastic, color: blue});
+
+            shapes.ball.draw(webgl_manager, uniform, left_hand, {...materials.plastic, color: blue})
+            shapes.ball.draw(webgl_manager, uniform, right_hand, {...materials.plastic, color: blue});
+
+        }
+
+        for(const s of this.springs) {
+            const p1 = s.particle_1.pos;
+            const p2 = s.particle_2.pos;
+            const len = (p2.minus(p1)).norm();
+            const center = (p1.plus(p2)).times(0.5);
+
+            let model_transform = Mat4.scale(0.05, len / 2, 0.05);
+
+            const p = p1.minus(p2).normalized();
+            let v = vec3(0, 1, 0);
+            if(Math.abs(v.cross(p).norm()) < 0.1) {
+                v = vec3(0, 0, 1);
+                model_transform = Mat4.scale(0.05, 0.05, len / 2);
+            }
+
+            const w = v.cross(p).normalized();
+
+            const theta = Math.acos(v.dot(p));
+            model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
+            model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
+            shapes.box.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: red});
+        }
+    }
+}
+
