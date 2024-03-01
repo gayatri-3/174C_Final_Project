@@ -160,6 +160,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           this.sim.particles.push(particle);
         }
 
+
+
         // for(let i = 0; i < num -1; i++) {
         //   let spring = new Spring();
         //   spring.particle_1 = this.sim.particles[i];
@@ -178,6 +180,18 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.car1 = new Car(-10, 0, 1);
         this.car2 = new Car(10, 0, 0);
         this.collided = false;
+
+        //particle system simulation init
+        this.particle_simulation = new Simulation();
+
+        let n = 5;
+        for(let i = 0; i < n; i++) {
+          let particle = new Particle();
+          particle.mass = 1.0;
+          particle.pos = vec3(-7, 0, (3*i) + 4);
+          particle.vel = vec3(0, 0, 0);
+          this.particle_simulation.particles.push(particle);
+        }
       }
 
       render_animation( caller )
@@ -307,6 +321,10 @@ export class Bumper_cars extends Bumper_cars_base
 
     this.sim.draw(caller, this.uniforms, this.shapes, this.materials);
 
+    // draw particle system
+    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
+    console.log(this.particle_simulation);
+
     let dt = 1/60;
     dt = Math.min(1/30, dt);
 
@@ -314,6 +332,7 @@ export class Bumper_cars extends Bumper_cars_base
     while(this.t_sim < t_next) {
       let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 5),2));
       this.sim.update(this.t_step, point1);
+      //this.particle_simulation.update(t_step);
       // console.log(point1);
       this.t_sim += this.t_step;
     }
@@ -343,6 +362,8 @@ export class Bumper_cars extends Bumper_cars_base
       console.log(velocities);
     }
     console.log("Collision?: " + this.car1.has_collided(this.car2));
+
+
   }
 
   render_controls()
