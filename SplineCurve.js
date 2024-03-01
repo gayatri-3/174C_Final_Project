@@ -291,17 +291,26 @@ export class Particle_Simulation {
 
         for(const p of this.particles) {
             const pos = p.pos;
-            // let model_transform = Mat4.scale(0.2, 0.2, 0.2);
-            // model_transform.pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
-            //shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: blue});
             let model_transform = Mat4.identity().pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
+
             let body_model_transform = model_transform.times(Mat4.translation(0, 1, 0));
-            let head_model_transform = model_transform.times(Mat4.translation(0, 1.75, 0));
             body_model_transform = body_model_transform.times(Mat4.scale(.5, .5, .5));
+
+            let head_model_transform = model_transform.times(Mat4.translation(0, 1.75, 0));
             head_model_transform = head_model_transform.times(Mat4.scale(.3, .3, .3));
+
+            let left_hand = model_transform.times(Mat4.translation(0.25, 1.25, 0.5));
+            left_hand = left_hand.times(Mat4.scale(0.2, 0.2, 0.2));
+
+            let right_hand = left_hand.times(Mat4.translation(0, 0, -4.5));
+
+
             const white = color(1, 1, 1, 1);
             shapes.ball.draw(webgl_manager, uniform, body_model_transform, {...materials.plastic, color: white});
             shapes.ball.draw(webgl_manager, uniform, head_model_transform, {...materials.plastic, color: blue});
+
+            shapes.ball.draw(webgl_manager, uniform, left_hand, {...materials.plastic, color: blue})
+            shapes.ball.draw(webgl_manager, uniform, right_hand, {...materials.plastic, color: blue});
 
         }
 
