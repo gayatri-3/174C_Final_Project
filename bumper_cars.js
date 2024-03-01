@@ -4,7 +4,7 @@ import { Shape_From_File } from './examples/obj-file-demo.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 
-import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation} from "./SplineCurve.js";
+import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer} from "./SplineCurve.js";
 
 const Car = class Car{
   constructor(x, y, z, vx = 0, vy = 0, vz = 0){
@@ -192,6 +192,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           particle.vel = vec3(0, 0, 0);
           this.particle_simulation.particles.push(particle);
         }
+
+        //tree init
+        this.tree = new TreeDrawer(4, 2, 0.1);
       }
 
       render_animation( caller )
@@ -363,6 +366,9 @@ export class Bumper_cars extends Bumper_cars_base
       console.log(velocities);
     }
     console.log("Collision?: " + this.car1.has_collided(this.car2));
+
+    //draw tree
+    //this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
 
 
   }

@@ -339,3 +339,85 @@ export class Particle_Simulation {
     }
 }
 
+export class TreeDrawer {
+    constructor(levels, branchLength, leafRadius) {
+        this.levels = levels;
+        this.branchLength = branchLength;
+        this.leafRadius = leafRadius;
+
+        this.particles = [];
+        this.springs = [];
+
+        this.createTree();
+    }
+
+    createTree() {
+        // Create the root particle
+        const rootParticle = new Particle();
+        rootParticle.pos = vec3(0, 0, 0);
+        this.particles.push(rootParticle);
+
+        // Recursively create branches and leaves
+        this.createBranch(rootParticle, vec3(0, 1, 0), this.levels);
+    }
+
+    createBranch(parentParticle, direction, levels) {
+        if (levels <= 0) {
+            // Create a leaf particle
+            const leafParticle = new Particle();
+            leafParticle.pos = parentParticle.pos.plus(direction.times(this.branchLength));
+            this.particles.push(leafParticle);
+
+            // Create a spring between parent and leaf
+            const spring = new Spring();
+            spring.particle_1 = parentParticle;
+            spring.particle_2 = leafParticle;
+            spring.ks = 0.5;  // You can adjust these values
+            spring.kd = 0.1;
+            spring.rest_length = this.branchLength;
+            this.springs.push(spring);
+        } else {
+            // Create a branch particle
+            const branchParticle = new Particle();
+            branchParticle.pos = parentParticle.pos.plus(direction.times(this.branchLength));
+            this.particles.push(branchParticle);
+
+            // Create a spring between parent and branch
+            const spring = new Spring();
+            spring.particle_1 = parentParticle;
+            spring.particle_2 = branchParticle;
+            spring.ks = 0.5;  // You can adjust these values
+            spring.kd = 0.1;
+            spring.rest_length = this.branchLength;
+            this.springs.push(spring);
+
+            // Recursively create sub-branches
+            const newDirection1 = vec3(0.5, Math.random(), 0.5).normalized();
+            const newDirection2 = vec3(-0.5, Math.random(), 0.5).normalized();
+            this.createBranch(branchParticle, newDirection1, levels - 1);
+            this.createBranch(branchParticle, newDirection2, levels - 1);
+        }
+    }
+
+    update(dt) {
+        // Update the simulation
+        const simulation = new Simulation();
+        simulation.particles = this.particles;
+        simulation.springs = this.springs;
+        simulation.g_acc = 0.1;  // Gravity acceleration, adjust as needed
+        simulation.ground_ks = 0.2;  // Ground spring constant
+        simulation.ground_kd = 0.1;  // Ground damping constant
+        simulation.update(dt);
+    }
+
+    draw(webgl_manager, uniform, shapes, materials) {
+        // Draw particles and springs
+        const simulation = new Particle_Simulation();
+        simulation.particles = this.particles;
+        simulation.springs = this.springs;
+        simulation.g_acc = 0.1;
+        simulation.ground_ks = 0.2;
+        simulation.ground_kd = 0.1;
+        simulation.draw(webgl_manager, uniform, shapes, materials);
+    }
+}
