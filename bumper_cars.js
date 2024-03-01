@@ -104,7 +104,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
         // this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
+        //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
+        //this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_cartoon.png")}
         this.ball_location = vec3(1, 1, 1);
         this.ball_radius = 0.25;
 
