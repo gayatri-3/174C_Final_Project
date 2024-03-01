@@ -1,4 +1,5 @@
 import {tiny, defs} from './examples/common.js';
+import { Shape_From_File } from './examples/obj-file-demo.js';
 
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
@@ -16,12 +17,12 @@ const Car = class Car{
 
     this.mass = 1;
 
-    this.x_dim = 0.5;
-    this.y_dim = 0.5;
-    this.z_dim = 1;
+    this.x_dim = 2.8;
+    this.y_dim = 2.8;
+    this.z_dim = 2.8;
     
-    this.car = new defs.Cube;
-    this.material = { shader: new defs.Phong_Shader, ambient: .2, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) }
+    this.car = new Shape_From_File('./assets/bumper_cars/bumper_car.obj');
+    this.material = { shader: new defs.Phong_Shader, ambient: .2, diffusivity: 1, specularity: .5, color: color( 1.0, 0, 0,1 ) }
   }
 
   transform(context, program_state, transform){
@@ -318,10 +319,10 @@ export class Bumper_cars extends Bumper_cars_base
     }
 
     // BUMPER CARS!!!!
-    let bumper_car_transform = Mat4.translation(0,0.5,0).times(Mat4.scale(0.5,0.5,1));
+    let bumper_car_transform = Mat4.rotation(-90, 0, 1, 0).times(Mat4.translation(0,0.5,0));
     // this.shapes.box.draw(caller, this.uniforms, bumper_car_transform, {...this.materials.metal, color: red});
     this.car1.transform(caller, this.uniforms, bumper_car_transform);
-    let bumper_car2_transform = Mat4.translation(0, 0.5, 0).times(Mat4.scale(0.5, 0.5, 1));
+    let bumper_car2_transform = Mat4.rotation(90, 0, 1, 0).times(Mat4.translation(0, 0.5, 0));
     this.car2.transform(caller, this.uniforms, bumper_car2_transform);
     if (this.car1.has_collided(this.car2))
       this.collided = true;
