@@ -14,6 +14,9 @@ const Car = class Car{
     this.vx = vx;
     this.vy = vy;
     this.vz = vz;
+    this.wx = 0;
+    this.wy = 0;
+    this.wz = 0;
 
     this.mass = 1;
 
@@ -26,7 +29,7 @@ const Car = class Car{
   }
 
   transform(context, program_state, transform){
-    let car_transform = transform.times(Mat4.translation(this.x, this.y, this.z));
+    let car_transform = transform.times(Mat4.translation(this.x, this.y, this.z)).times(Mat4.rotation(this.wy, 0, 1, 0));
     this.car.draw(context, program_state, car_transform, this.material);
   }
 
@@ -44,6 +47,12 @@ const Car = class Car{
     this.vx = vx;
     this.vy = vy;
     this.vz = vz;
+  }
+
+  update_rot(wx = this.wx, wy = this.wy, wz = this.wz){
+    this.wx = wx;
+    this.wy = wy;
+    this.wz = wz;
   }
   has_collided(obj2){
     let collisionX = Math.abs(this.x - obj2.x) < 2 * ((this.x_dim) + (obj2.x_dim));
@@ -179,8 +188,11 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.sim.g_acc = vec3(0, -9.8, 0);
 
         // BUMPER CAR INIT
+        this.starting_rot_ang = 1/50;
         this.car1 = new Car(-10, 0, 1);
         this.car2 = new Car(10, 0, 0);
+        this.velocities = this.car1.calculate_collision(this.car2);
+        this.velocitized = false;
         this.collided = false;
 
         //particle system simulation init
@@ -326,7 +338,7 @@ export class Bumper_cars extends Bumper_cars_base
     // draw particle system
     this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
     //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
-    console.log(this.particle_simulation);
+    // console.log(this.particle_simulation);
 
     let dt = 1/60;
     dt = Math.min(1/30, dt);
@@ -341,6 +353,8 @@ export class Bumper_cars extends Bumper_cars_base
     }
 
     // BUMPER CARS!!!!
+    let friction = 1/10000;
+    let translational_friction = 1/100;
     let bumper_car_transform = Mat4.rotation(-90, 0, 1, 0).times(Mat4.translation(0,0.5,0));
     // this.shapes.box.draw(caller, this.uniforms, bumper_car_transform, {...this.materials.metal, color: red});
     this.car1.transform(caller, this.uniforms, bumper_car_transform);
@@ -359,12 +373,25 @@ export class Bumper_cars extends Bumper_cars_base
       }
     }
     else {
-      let velocities = this.car1.calculate_collision(this.car2);
-      this.car1.update_pos(velocities[0][0], -1);
-      this.car2.update_pos(velocities[1][0], 1);
-      console.log(velocities);
+      if (!this.velocitized){
+        this.velocities = this.car1.calculate_collision(this.car2);
+        this.velocitized = true;
+      }
+      if (Math.abs(this.velocities[0][0]) > 0 && this.starting_rot_ang > 0){
+        this.car1.update_pos(this.velocities[0][0], -1);
+        this.car2.update_pos(this.velocities[1][0], 1);
+        this.velocities[0][0] += translational_friction;
+        this.velocities[1][0] -= translational_friction;
+        console.log(this.velocities)
+      }
+      if (this.starting_rot_ang > 0){
+        this.car1.update_rot(this.car1.wx, this.car1.wy + this.starting_rot_ang, this.car1.wz);
+        this.car2.update_rot(this.car2.wx, this.car2.wy - this.starting_rot_ang, this.car2.wz);
+      }
+      this.starting_rot_ang -= friction;
+      // console.log(velocities);
     }
-    console.log("Collision?: " + this.car1.has_collided(this.car2));
+    // console.log("Collision?: " + this.car1.has_collided(this.car2));
 
 
   }

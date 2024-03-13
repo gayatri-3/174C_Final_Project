@@ -1,6 +1,6 @@
 *.gif
 *.ico
-# *.obj
+*.obj
 *.bat
 *.command
 .vscode/*
