@@ -110,6 +110,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         const tex_phong = new defs.Textured_Phong();
         this.materials = {};
         this.materials.plastic = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) }
+        this.materials.bumper_car_floor = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .64,.64,.64,1 ) }
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
         // this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
@@ -248,6 +249,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.shapes.sky.draw(caller, this.uniforms, sky_transform, this.materials.sky);
         let floor_transform = Mat4.identity().times(Mat4.scale(50, 0.01, 50));
         this.shapes.box.draw(caller, this.uniforms, floor_transform, this.materials.ground);
+
+        let bumper_floor_transform = Mat4.identity().times(Mat4.translation(-1, 0.1, -6)).times(Mat4.scale(8, 0.01, 8));
+        this.shapes.box.draw(caller, this.uniforms, bumper_floor_transform, this.materials.bumper_car_floor);
       }
     }
 
