@@ -95,6 +95,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'ball' : new defs.Subdivision_Sphere( 4 ),
           'axis' : new defs.Axis_Arrows(),
           'sky': new defs.Subdivision_Sphere(4),
+          'fence' : new Shape_From_File("./assets/fence/fence.obj")
         };
 
         this.curve_fn = null;
@@ -250,8 +251,17 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         let floor_transform = Mat4.identity().times(Mat4.scale(50, 0.01, 50));
         this.shapes.box.draw(caller, this.uniforms, floor_transform, this.materials.ground);
 
+        // bumper car scenery
         let bumper_floor_transform = Mat4.identity().times(Mat4.translation(-1, 0.1, -6)).times(Mat4.scale(8, 0.01, 8));
         this.shapes.box.draw(caller, this.uniforms, bumper_floor_transform, this.materials.bumper_car_floor);
+        let fence1_transform = Mat4.identity().times(Mat4.translation(-1, 0, 2)).times(Mat4.scale(4.5, 5, 5));
+        this.shapes.fence.draw(caller, this.uniforms, fence1_transform, this.materials.bumper_car_floor);
+        let fence2_transform = Mat4.identity().times(Mat4.translation(-1, 0, -14)).times(Mat4.scale(4.5, 5, 5));
+        this.shapes.fence.draw(caller, this.uniforms, fence2_transform, this.materials.bumper_car_floor);
+        let fence3_transform = Mat4.identity().times(Mat4.translation(7, 0, -6)).times(Mat4.scale(4.5, 5, 4.5)).times(Mat4.rotation(83.25, 0, 1, 0));
+        this.shapes.fence.draw(caller, this.uniforms, fence3_transform, this.materials.bumper_car_floor);
+        let fence4_transform = Mat4.identity().times(Mat4.translation(-9, 0, -6)).times(Mat4.scale(4.5, 5, 4.5)).times(Mat4.rotation(83.25, 0, 1, 0));
+        this.shapes.fence.draw(caller, this.uniforms, fence4_transform, this.materials.bumper_car_floor);
       }
     }
 
@@ -368,12 +378,12 @@ export class Bumper_cars extends Bumper_cars_base
       this.collided = true;
     if (!this.collided){
       if (this.car1.x < 10){
-        this.car1.update_pos(2, 0);
-        this.car1.update_velocity(2, 0, 0);
+        this.car1.update_pos(5, 0);
+        this.car1.update_velocity(5, 0, 0);
       }
       if (this.car2.x > -10){
-        this.car2.update_pos(-2, 0);
-        this.car2.update_velocity(-2, 0, 0);
+        this.car2.update_pos(-5, 0);
+        this.car2.update_velocity(-5, 0, 0);
       }
     }
     else {
@@ -395,6 +405,7 @@ export class Bumper_cars extends Bumper_cars_base
       this.starting_rot_ang -= friction;
       // console.log(velocities);
     }
+    
     // console.log("Collision?: " + this.car1.has_collided(this.car2));
 
 
