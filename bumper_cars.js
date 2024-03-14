@@ -196,6 +196,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.velocities = this.car1.calculate_collision(this.car2);
         this.velocitized = false;
         this.collided = false;
+        this.hit_wall = false;
 
         //particle system simulation init
         this.particle_simulation = new Particle_Simulation();
@@ -374,8 +375,9 @@ export class Bumper_cars extends Bumper_cars_base
     this.car1.transform(caller, this.uniforms, bumper_car_transform);
     let bumper_car2_transform = Mat4.rotation(90, 0, 1, 0).times(Mat4.translation(0, 0.5, 0));
     this.car2.transform(caller, this.uniforms, bumper_car2_transform);
-    if (this.car1.has_collided(this.car2))
+    if (this.car1.has_collided(this.car2)){
       this.collided = true;
+    }
     if (!this.collided){
       if (this.car1.x < 10){
         this.car1.update_pos(5, 0);
@@ -386,7 +388,8 @@ export class Bumper_cars extends Bumper_cars_base
         this.car2.update_velocity(-5, 0, 0);
       }
     }
-    else {
+    // rotation case
+    else if (!this.hit_wall){
       if (!this.velocitized){
         this.velocities = this.car1.calculate_collision(this.car2);
         this.velocitized = true;
@@ -396,17 +399,25 @@ export class Bumper_cars extends Bumper_cars_base
         this.car2.update_pos(this.velocities[1][0], 1);
         this.velocities[0][0] += translational_friction;
         this.velocities[1][0] -= translational_friction;
-        console.log(this.velocities)
       }
       if (this.starting_rot_ang > 0){
         this.car1.update_rot(this.car1.wx, this.car1.wy + this.starting_rot_ang, this.car1.wz);
         this.car2.update_rot(this.car2.wx, this.car2.wy - this.starting_rot_ang, this.car2.wz);
       }
       this.starting_rot_ang -= friction;
-      // console.log(velocities);
     }
-    
-    // console.log("Collision?: " + this.car1.has_collided(this.car2));
+    if (this.car1.x < -14)
+      this.hit_wall  = true;
+    if (this.hit_wall && this.car1.vx > 0){
+      this.starting_rot_ang = 1/50;
+      this.car1.update_pos(this.car1.vx, 0);
+      this.car2.update_pos(this.car2.vx, 0);
+      this.car1.update_rot(this.car1.wx, this.car1.wy + this.starting_rot_ang, this.car1.wz);
+      this.car2.update_rot(this.car2.wx, this.car2.wy - this.starting_rot_ang, this.car2.wz);
+      this.car1.vx -= 3 * translational_friction;
+      this.car2.vx += 3 * translational_friction;
+    }
+    console.log("Collision?: " + this.car1.has_collided(this.car2));
 
 
   }
