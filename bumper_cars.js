@@ -4,7 +4,9 @@ import { Shape_From_File } from './examples/obj-file-demo.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 
-import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer} from "./SplineCurve.js";
+import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer, FireworksDisplay} from "./SplineCurve.js";
+
+let lastTimestamp = performance.now() / 1000;
 
 const Car = class Car{
   constructor(x, y, z, vx = 0, vy = 0, vz = 0){
@@ -194,18 +196,17 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         }
 */
         //tree init
-        // Define colors and other parameters
         const branchColor = [0.5, 0.35, 0.05, 1]; // Brown
         const leafColor = [0.0, 0.8, 0.0, 1]; // Green
-
-// Adjust these values as needed
         const levels = 4;
         const branchLength = 3;
         const branchScaleFactor = 0.5; // Adjust the branch scaling factor
         const leafScaleFactor = 1; // Adjust the leaf scaling factor
         const treeTranslation = Mat4.translation(-5, -1, 5);
-// Create an instance of TreeDrawer
         this.tree = new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, treeTranslation);
+
+        //fireworks init
+        this.fireworks = new FireworksDisplay(10, 100, 100);
 
       }
 
@@ -261,6 +262,7 @@ export class Bumper_cars extends Bumper_cars_base
                                                      // the shapes.  We isolate that code so it can be experimented with on its own.
                                                      // This gives you a very small code sandbox for editing a simple scene, and for
                                                      // experimenting with matrix transformations.
+
   render_animation( caller )
   {                                                // display():  Called once per frame of animation.  For each shape that you want to
     // appear onscreen, place a .draw() call for it inside.  Each time, pass in a
@@ -341,6 +343,7 @@ export class Bumper_cars extends Bumper_cars_base
     //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
 //    console.log(this.particle_simulation);
 
+
     /*
     let dt = 1/60;
     dt = Math.min(1/30, dt);
@@ -383,6 +386,12 @@ export class Bumper_cars extends Bumper_cars_base
     //draw tree
     this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
 
+    //draw fireworks
+    const currentTime = performance.now() / 1000; // Convert to seconds
+    const dt = currentTime - lastTimestamp;
+    lastTimestamp = currentTime;
+    this.fireworks.update(dt);
+    this.fireworks.draw(caller, this.uniforms, this.shapes, this.materials);
 
   }
 

@@ -448,3 +448,65 @@ export class TreeDrawer {
 
     }
 }
+
+export class Firework {
+    constructor(position, velocity, color) {
+        this.position = position;
+        this.velocity = velocity;
+        this.color = color;
+    }
+}
+
+export class FireworksDisplay {
+    constructor(numFireworks, canvasWidth, canvasHeight) {
+        this.numFireworks = numFireworks;
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
+
+        this.fireworks = [];
+
+        // Initialize fireworks
+        for (let i = 0; i < this.numFireworks; i++) {
+            const fireworks = this.createFirework();
+            this.fireworks.push(fireworks);
+        }
+    }
+
+    createFirework() {
+        // Example: Randomly generate color
+        const randomColor = color(Math.random(), Math.random(), Math.random(), 1.0);
+
+        // Create a firework with random color
+        const fireworks = new Firework(
+            vec3(Math.random() * this.canvasWidth, Math.random() * this.canvasHeight, 0),
+            vec3(0, 0, 0), // Initial velocity
+            randomColor // Set color
+        );
+
+        return fireworks;
+    }
+
+    update(dt) {
+        // Update fireworks position, velocity, etc.
+        const gravity = vec3(0, -9.81, 0); // Example gravity vector (adjust as needed)
+
+        for (const fireworks of this.fireworks) {
+            // Apply gravity to the velocity
+            fireworks.velocity = fireworks.velocity.plus(gravity.times(dt));
+
+            // Update position based on velocity
+            fireworks.position = fireworks.position.plus(fireworks.velocity.times(dt));
+        }
+    }
+
+    draw(webgl_manager, uniform, shapes, materials) {
+        // Draw fireworks
+        for (const fireworks of this.fireworks) {
+            // Example: Draw a particle at fireworks position with specified color
+            shapes.ball.draw(webgl_manager, uniform, Mat4.translation(...fireworks.position), {
+                ...materials.plastic,
+                color: fireworks.color
+            });
+        }
+    }
+}
