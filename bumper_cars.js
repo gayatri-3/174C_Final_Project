@@ -203,7 +203,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         const branchLength = 3;
         const branchScaleFactor = 0.5; // Adjust the branch scaling factor
         const leafScaleFactor = 1; // Adjust the leaf scaling factor
-        const treeTranslation = Mat4.translation(10, 0, 10);
+        const treeTranslation = Mat4.translation(-5, -1, 5);
 // Create an instance of TreeDrawer
         this.tree = new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, treeTranslation);
 

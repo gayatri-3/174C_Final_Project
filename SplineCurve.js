@@ -291,9 +291,22 @@ export class Particle_Simulation {
     }
 
     draw(webgl_manager, uniform, shapes, materials, translationMatrix) {
+        const swayMagnitude = 0.1; // Adjust this value to control the maximum distance the leaves sway
+
         for(const p of this.particles) {
             const pos = p.pos;
-            let model_transform = Mat4.identity().pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
+
+            // Generate random offsets for swaying
+            const swayOffset = vec3(
+                Math.random() * swayMagnitude - swayMagnitude / 2, // Random offset along x-axis
+                Math.random() * swayMagnitude - swayMagnitude / 2, // Random offset along y-axis
+                Math.random() * swayMagnitude - swayMagnitude / 2  // Random offset along z-axis
+            );
+
+            // Apply the offsets to the leaf positions
+            const finalPos = pos.plus(swayOffset);
+
+            let model_transform = Mat4.identity().pre_multiply(Mat4.translation(finalPos[0], finalPos[1], finalPos[2]));
             model_transform = model_transform.times(translationMatrix);
             // Scale the branches
             model_transform = model_transform.times(Mat4.scale(this.particleScaleFactor, this.particleScaleFactor, this.particleScaleFactor));
