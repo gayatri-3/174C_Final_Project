@@ -450,18 +450,22 @@ export class TreeDrawer {
 }
 
 export class Firework {
-    constructor(position, velocity, color) {
+    constructor(position, velocity, color, remainingBursts) {
         this.position = position;
         this.velocity = velocity;
         this.color = color;
+        this.previousPosition = position.copy();
+        this.previousVelocity = velocity.copy();
+        this.remainingBursts = remainingBursts; // Track remaining bursts
     }
 }
 
 export class FireworksDisplay {
-    constructor(numFireworks, canvasWidth, canvasHeight) {
+    constructor(numFireworks, canvasWidth, canvasHeight, maxBursts) {
         this.numFireworks = numFireworks;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
+        this.maxBursts = maxBursts; // Maximum bursts allowed
 
         this.fireworks = [];
 
@@ -473,40 +477,69 @@ export class FireworksDisplay {
     }
 
     createFirework() {
-        // Example: Randomly generate color
         const randomColor = color(Math.random(), Math.random(), Math.random(), 1.0);
-
-        // Create a firework with random color
         const fireworks = new Firework(
-            vec3(Math.random() * this.canvasWidth, Math.random() * this.canvasHeight, 0),
-            vec3(0, 0, 0), // Initial velocity
-            randomColor // Set color
+            vec3(Math.random() * this.canvasWidth, Math.random() * this.canvasHeight, Math.random() * this.canvasWidth),
+            vec3(0, 10 + Math.random() * 10, 0), // Initial velocity (upward)
+            randomColor,
+            this.maxBursts // Pass maxBursts to Firework constructor
         );
-
         return fireworks;
     }
 
     update(dt) {
-        // Update fireworks position, velocity, etc.
-        const gravity = vec3(0, -9.81, 0); // Example gravity vector (adjust as needed)
+        const gravity = vec3(0, -9.81, 0);
 
-        for (const fireworks of this.fireworks) {
-            // Apply gravity to the velocity
-            fireworks.velocity = fireworks.velocity.plus(gravity.times(dt));
+        for (const firework of this.fireworks) {
+            firework.previousPosition = firework.position.copy(); // Store previous position
+            firework.previousVelocity = firework.velocity.copy(); // Store previous velocity
 
-            // Update position based on velocity
-            fireworks.position = fireworks.position.plus(fireworks.velocity.times(dt));
+            // Update velocity and position
+            firework.velocity = firework.velocity.plus(gravity.times(dt));
+            firework.position = firework.position.plus(firework.velocity.times(dt));
+
+            // Check for burst
+            if (firework.velocity[1] < 0 && firework.previousVelocity[1] > 0 && firework.remainingBursts > 0) {
+                this.triggerBurst(firework);
+                firework.remainingBursts--; // Decrement remaining bursts
+            }
+        }
+    }
+
+    triggerBurst(firework) {
+        const numBranches = 5; // Number of branches
+        const branchAngle = (2 * Math.PI) / numBranches; // Angle between branches
+
+        // Create particles in a burst pattern
+        for (let i = 0; i < numBranches; i++) {
+            const angle = i * branchAngle;
+            const branchVelocity = vec3(Math.cos(angle), Math.sin(angle), 0).times(5); // Branch velocity
+
+            // Create branch particles
+            const branchParticle1 = new Firework(
+                firework.position.copy(), // Position same as parent firework
+                branchVelocity, // Branch velocity
+                firework.color, // Same color as parent firework
+                0 // No further bursts allowed for branch particles
+            );
+
+            const branchParticle2 = new Firework(
+                firework.position.copy(), // Position same as parent firework
+                branchVelocity.times(-1), // Branch velocity in opposite direction
+                firework.color, // Same color as parent firework
+                0 // No further bursts allowed for branch particles
+            );
+
+            // Add branch particles to fireworks array
+            this.fireworks.push(branchParticle1);
+            this.fireworks.push(branchParticle2);
         }
     }
 
     draw(webgl_manager, uniform, shapes, materials) {
-        // Draw fireworks
         for (const fireworks of this.fireworks) {
-            // Example: Draw a particle at fireworks position with specified color
-            shapes.ball.draw(webgl_manager, uniform, Mat4.translation(...fireworks.position), {
-                ...materials.plastic,
-                color: fireworks.color
-            });
+            const model_transform = Mat4.translation(...fireworks.position);
+            shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: fireworks.color});
         }
     }
 }

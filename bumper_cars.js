@@ -206,7 +206,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.tree = new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, treeTranslation);
 
         //fireworks init
-        this.fireworks = new FireworksDisplay(10, 100, 100);
+        this.fireworks = new FireworksDisplay(10, 10, 10, 2);
 
       }
 
