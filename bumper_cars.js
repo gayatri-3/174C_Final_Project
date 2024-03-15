@@ -194,12 +194,18 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         }
 */
         //tree init
-        // Define the colors you want to use
-        const branchColor = color(0.5, 0.3, 0.1, 1); // Example branch color
-        const leafColor = color(0.2, 0.7, 0.1, 1); // Example leaf color
+        // Define colors and other parameters
+        const branchColor = [0.5, 0.35, 0.05, 1]; // Brown
+        const leafColor = [0.0, 0.8, 0.0, 1]; // Green
 
-// Instantiate TreeDrawer with specified colors
-        this.tree = new TreeDrawer(4, 2, 0.001);
+// Adjust these values as needed
+        const levels = 4;
+        const branchLength = 3;
+        const branchScaleFactor = 0.5; // Adjust the branch scaling factor
+        const leafScaleFactor = 1; // Adjust the leaf scaling factor
+        const treeTranslation = Mat4.translation(10, 0, 10);
+// Create an instance of TreeDrawer
+        this.tree = new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, treeTranslation);
 
       }
 

@@ -207,7 +207,7 @@ export class Simulation {
             let model_transform = Mat4.identity().pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
             model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
             model_transform = model_transform.times(Mat4.translation(0, 1, 0));
-            shapes.box.draw( webgl_manager, uniform, model_transform, { ...materials.plastic, color: blue } );
+            //shapes.box.draw( webgl_manager, uniform, model_transform, { ...materials.plastic, color: blue } );
 
         }
 
@@ -238,12 +238,16 @@ export class Simulation {
 
 
 export class Particle_Simulation {
-    constructor() {
+    constructor(particleColor, springColor, springScaleFactor, particleScaleFactor) {
         this.particles = [];
         this.springs = [];
         this.g_acc = 0;
         this.ground_ks = 0;
         this.ground_kd = 0;
+        this.particleColor = particleColor;
+        this.springColor = springColor;
+        this.springScaleFactor = springScaleFactor;
+        this.particleScaleFactor = particleScaleFactor;
     }
 
     update(dt, point1) {
@@ -286,34 +290,15 @@ export class Particle_Simulation {
         p.ext_force = p.ext_force.plus(left.minus(right));
     }
 
-    draw(webgl_manager, uniform, shapes, materials) {
-        const blue = color(0, 0, 1, 1);
-        const red = color( 1, 0, 0, 1);
-
+    draw(webgl_manager, uniform, shapes, materials, translationMatrix) {
         for(const p of this.particles) {
             const pos = p.pos;
             let model_transform = Mat4.identity().pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
-/*
-            let body_model_transform = model_transform.times(Mat4.translation(0, 1, 0));
-            body_model_transform = body_model_transform.times(Mat4.scale(.5, .5, .5));
+            model_transform = model_transform.times(translationMatrix);
+            // Scale the branches
+            model_transform = model_transform.times(Mat4.scale(this.particleScaleFactor, this.particleScaleFactor, this.particleScaleFactor));
 
-            let head_model_transform = model_transform.times(Mat4.translation(0, 1.75, 0));
-            head_model_transform = head_model_transform.times(Mat4.scale(.3, .3, .3));
-
-            let left_hand = model_transform.times(Mat4.translation(0.25, 1.25, 0.5));
-            left_hand = left_hand.times(Mat4.scale(0.2, 0.2, 0.2));
-
-            let right_hand = left_hand.times(Mat4.translation(0, 0, -4.5));
-*/
-            shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: blue});
-/*
-            const white = color(1, 1, 1, 1);
-            shapes.ball.draw(webgl_manager, uniform, body_model_transform, {...materials.plastic, color: white});
-            shapes.ball.draw(webgl_manager, uniform, head_model_transform, {...materials.plastic, color: blue});
-
-            shapes.ball.draw(webgl_manager, uniform, left_hand, {...materials.plastic, color: blue})
-            shapes.ball.draw(webgl_manager, uniform, right_hand, {...materials.plastic, color: blue});
-*/
+            shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: this.particleColor});
         }
 
         for(const s of this.springs) {
@@ -322,35 +307,52 @@ export class Particle_Simulation {
             const len = (p2.minus(p1)).norm();
             const center = (p1.plus(p2)).times(0.5);
 
-            let model_transform = Mat4.scale(0.05, len / 2, 0.05);
+            let model_transform = Mat4.identity().pre_multiply(Mat4.translation(center[0], center[1], center[2])); // Apply translation first
+            model_transform = model_transform.times(translationMatrix);
 
+            // Apply rotation (if needed)
             const p = p1.minus(p2).normalized();
             let v = vec3(0, 1, 0);
             if(Math.abs(v.cross(p).norm()) < 0.1) {
                 v = vec3(0, 0, 1);
-                model_transform = Mat4.scale(0.05, 0.05, len / 2);
+                model_transform = model_transform.times(Mat4.scale(0.05 * this.springScaleFactor, 0.05 * this.springScaleFactor, len / 2));
             }
 
             const w = v.cross(p).normalized();
 
             const theta = Math.acos(v.dot(p));
-            model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
-            model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
-            shapes.box.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: red});
+            model_transform = model_transform.times(Mat4.rotation(theta, w[0], w[1], w[2]));
+
+            // Apply scaling
+            model_transform = model_transform.times(Mat4.scale(0.05 * this.springScaleFactor, len / 2, 0.05 * this.springScaleFactor));
+
+            shapes.box.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: this.springColor});
         }
     }
 }
 
 export class TreeDrawer {
-    constructor(levels, branchLength, leafRadius) {
+    constructor(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, translationMatrix) {
         this.levels = levels;
         this.branchLength = branchLength;
-        this.leafRadius = leafRadius;
+        this.branchColor = branchColor;
+        this.leafColor = leafColor;
+        this.branchScaleFactor = branchScaleFactor;
+        this.leafScaleFactor = leafScaleFactor;
+        this.translationMatrix = translationMatrix;
 
         this.particles = [];
         this.springs = [];
 
         this.createTree();
+
+        // Initialize the simulation object
+        this.simulation = new Particle_Simulation(leafColor, branchColor, branchScaleFactor, leafScaleFactor);
+        this.simulation.particles = this.particles;
+        this.simulation.springs = this.springs;
+        this.simulation.g_acc = 0.1;  // Adjust as needed
+        this.simulation.ground_ks = 0.2;
+        this.simulation.ground_kd = 0.1;
     }
 
     createTree() {
@@ -359,15 +361,23 @@ export class TreeDrawer {
         rootParticle.pos = vec3(0, 0, 0);
         this.particles.push(rootParticle);
 
-        // Recursively create branches and leaves
-        this.createBranch(rootParticle, vec3(0, 1, 0), this.levels);
+        // Create the trunk (main branch)
+        const trunkDirection = vec3(0, 1, 0);
+        this.createBranch(rootParticle, trunkDirection, this.levels, true); // Set true to indicate it's the trunk
     }
 
-    createBranch(parentParticle, direction, levels) {
+    createBranch(parentParticle, direction, levels, isTrunk = false) {
+        let branchLength = this.branchLength;
+
+        if (isTrunk) {
+            // Adjust the trunk length
+            branchLength *= 2; // Or any factor you prefer for the trunk length compared to other branches
+        }
+
         if (levels <= 0) {
             // Create a leaf particle
             const leafParticle = new Particle();
-            leafParticle.pos = parentParticle.pos.plus(direction.times(this.branchLength));
+            leafParticle.pos = parentParticle.pos.plus(direction.times(branchLength));
             this.particles.push(leafParticle);
 
             // Create a spring between parent and leaf
@@ -376,12 +386,12 @@ export class TreeDrawer {
             spring.particle_2 = leafParticle;
             spring.ks = 0.5;  // You can adjust these values
             spring.kd = 0.1;
-            spring.rest_length = this.branchLength;
+            spring.rest_length = branchLength;
             this.springs.push(spring);
         } else {
             // Create a branch particle
             const branchParticle = new Particle();
-            branchParticle.pos = parentParticle.pos.plus(direction.times(this.branchLength));
+            branchParticle.pos = parentParticle.pos.plus(direction.times(branchLength));
             this.particles.push(branchParticle);
 
             // Create a spring between parent and branch
@@ -390,20 +400,21 @@ export class TreeDrawer {
             spring.particle_2 = branchParticle;
             spring.ks = 0.5;  // You can adjust these values
             spring.kd = 0.1;
-            spring.rest_length = this.branchLength;
+            spring.rest_length = branchLength;
             this.springs.push(spring);
 
             // Recursively create sub-branches
-            const newDirection1 = vec3(0.5, Math.random(), 0.5).normalized();
-            const newDirection2 = vec3(-0.5, Math.random(), 0.5).normalized();
-            this.createBranch(branchParticle, newDirection1, levels - 1);
-            this.createBranch(branchParticle, newDirection2, levels - 1);
+            const numSubBranches = Math.floor(Math.random() * 3) + 3; // Generate 3 to 6 sub-branches
+            for (let i = 0; i < numSubBranches; i++) {
+                const newDirection = vec3(Math.random() * 2 - 1, Math.random(), Math.random() * 2 - 1).normalized();
+                this.createBranch(branchParticle, newDirection, levels - 1);
+            }
         }
     }
 
     update(dt) {
         // Update the simulation
-        const simulation = new Simulation();
+        const simulation = new Particle_Simulation();
         simulation.particles = this.particles;
         simulation.springs = this.springs;
         simulation.g_acc = 0.1;  // Gravity acceleration, adjust as needed
@@ -413,13 +424,14 @@ export class TreeDrawer {
     }
 
     draw(webgl_manager, uniform, shapes, materials) {
-        // Draw particles and springs
-        const simulation = new Particle_Simulation();
-        simulation.particles = this.particles;
-        simulation.springs = this.springs;
-        simulation.g_acc = 0.1;
-        simulation.ground_ks = 0.2;
-        simulation.ground_kd = 0.1;
-        simulation.draw(webgl_manager, uniform, shapes, materials);
+        this.simulation.draw(webgl_manager, uniform, shapes, materials, this.translationMatrix);
+
+
+        let model_transform = Mat4.identity().times(this.translationMatrix);
+        model_transform = model_transform.times(Mat4.translation(0, this.branchLength, 0));
+        model_transform = model_transform.times(Mat4.scale(this.branchScaleFactor, this.branchLength, this.branchScaleFactor));
+        shapes.box.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: this.branchColor});
+
+
     }
 }
