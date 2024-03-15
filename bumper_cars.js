@@ -182,8 +182,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.collided = false;
 
         //particle system simulation init
-        this.particle_simulation = new Particle_Simulation();
-
+        //this.particle_simulation = new Particle_Simulation();
+/*
         let n = 5;
         for(let i = 0; i < n; i++) {
           let particle = new Particle();
@@ -192,9 +192,15 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           particle.vel = vec3(0, 0, 0);
           this.particle_simulation.particles.push(particle);
         }
-
+*/
         //tree init
-        this.tree = new TreeDrawer(4, 2, 0.1);
+        // Define the colors you want to use
+        const branchColor = color(0.5, 0.3, 0.1, 1); // Example branch color
+        const leafColor = color(0.2, 0.7, 0.1, 1); // Example leaf color
+
+// Instantiate TreeDrawer with specified colors
+        this.tree = new TreeDrawer(4, 2, 0.001);
+
       }
 
       render_animation( caller )
@@ -325,10 +331,11 @@ export class Bumper_cars extends Bumper_cars_base
     this.sim.draw(caller, this.uniforms, this.shapes, this.materials);
 
     // draw particle system
-    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
+//    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
     //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
-    console.log(this.particle_simulation);
+//    console.log(this.particle_simulation);
 
+    /*
     let dt = 1/60;
     dt = Math.min(1/30, dt);
 
@@ -340,7 +347,7 @@ export class Bumper_cars extends Bumper_cars_base
       // console.log(point1);
       this.t_sim += this.t_step;
     }
-
+*/
     // BUMPER CARS!!!!
     let bumper_car_transform = Mat4.rotation(-90, 0, 1, 0).times(Mat4.translation(0,0.5,0));
     // this.shapes.box.draw(caller, this.uniforms, bumper_car_transform, {...this.materials.metal, color: red});
@@ -368,7 +375,7 @@ export class Bumper_cars extends Bumper_cars_base
     console.log("Collision?: " + this.car1.has_collided(this.car2));
 
     //draw tree
-    //this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
+    this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
 
 
   }
