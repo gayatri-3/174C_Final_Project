@@ -4,7 +4,8 @@ import { Shape_From_File } from './examples/obj-file-demo.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 
-import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation} from "./SplineCurve.js";
+import {Curve_Shape, Particle, Spring, Simulation, Particle_Simulation} from "./SplineCurve.js";
+import {Rollercoaster} from "./Rollercoaster.js";
 
 const Car = class Car{
   constructor(x, y, z, vx = 0, vy = 0, vz = 0){
@@ -113,7 +114,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.plastic = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) }
         this.materials.bumper_car_floor = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .64,.64,.64,1 ) }
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
-        // this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
+        this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
         //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
@@ -121,73 +122,13 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.ball_location = vec3(1, 1, 1);
         this.ball_radius = 0.25;
 
-        // TODO: you should create a Spline class instance
-        this.spline = new Spline();
-        this.spline_left = new Spline();
-        this.spline_right = new Spline();
-        // this.spline.add_point(2.0, 8.0, 0.0, -10.0, 0.0, 20.0);
-        // this.spline.add_point(4.0, 7.0, 5.0, 20.0, 0.0, 20.0);
-        // this.spline.add_point(6.0, 6.0, 3.0, 20.0, 0.0, -10.0);
-        // this.spline.add_point(5.0, 9.0, 9.0, -20.0, 0.0, -20.0);
-        // this.spline.add_point(2.0, 8.0, 0.0, -20.0, 0.0, 20.0);
-
-        this.spline_left.add_point(0.0, 5.0, 0.0, -20.0, 0.0, 20.0);
-        this.spline_left.add_point(0.0, 5.0, 5.0, 20.0, 0.0, 20.0);
-        this.spline_left.add_point(5.0, 5.0, 5.0, 20.0, 0.0, -20.0);
-        this.spline_left.add_point(5.0, 5.0, 0.0, -20.0, 0.0, -20.0);
-        this.spline_left.add_point(0.0, 5.0, 0.0, -20.0, 0.0, 20.0);
-
-        this.spline_right.add_point(-1, 5.0, -1, -24.0, 0.0, 24.0);
-        this.spline_right.add_point(-1, 5.0, 6, 24.0, 0.0, 24.0);
-        this.spline_right.add_point(6, 5.0, 6, 24.0, 0.0, -24.0);
-        this.spline_right.add_point(6, 5.0, -1, -24.0, 0.0, -24.0);
-        this.spline_right.add_point(-1, 5.0, -1, -24.0, 0.0, 24.0);
-
-        this.spline.add_point(-0.5, 5.0, -0.5, -22.0, 0.0, 22.0);
-        this.spline.add_point(-0.5, 5.0, 5.5, 22.0, 0.0, 22.0);
-        this.spline.add_point(5.5, 5.0, 5.5, 22.0, 0.0, -22.0);
-        this.spline.add_point(5.5, 5.0, -0.5, -22.0, 0.0, -22.0);
-        this.spline.add_point(-0.5, 5.0, -0.5, -22.0, 0.0, 22.0);
+        // Rollercoaster Instance
+        this.rollercoaster = new Rollercoaster();
+        this.rollercoaster.add_rollercoaster();
 
         this.sample_cnt = 1000;
         this.t_step = 0.01;
         this.t_sim = 0;
-
-        const curve_fn = (t) => this.spline.get_position(t);
-        this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
-
-        const curve_left = (t) => this.spline_left.get_position(t);
-        this.curve_left = new Curve_Shape(curve_left, this.sample_cnt);
-
-        const curve_right = (t) => this.spline_right.get_position(t);
-        this.curve_right = new Curve_Shape(curve_right, this.sample_cnt);
-
-        this.sim = new Simulation();
-        const num = 1;
-        let y_val = 8;
-        for(let i = 0; i < num; i++) {
-          let particle = new Particle();
-          particle.mass = 1.0;
-          particle.pos = vec3(2, y_val-i, 0);
-          particle.vel = vec3(0, 0, 0);
-          this.sim.particles.push(particle);
-        }
-
-
-
-        // for(let i = 0; i < num -1; i++) {
-        //   let spring = new Spring();
-        //   spring.particle_1 = this.sim.particles[i];
-        //   spring.particle_2 = this.sim.particles[i+1];
-        //   spring.ks = 5;
-        //   spring.kd = 0.1;
-        //   spring.rest_length = 1;
-        //   this.sim.springs.push(spring);
-        // }
-
-        this.sim.ground_ks = 5000;
-        this.sim.ground_kd = 1;
-        this.sim.g_acc = vec3(0, -9.8, 0);
 
         // BUMPER CAR INIT
         this.starting_rot_ang = 1/50;
@@ -246,7 +187,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.uniforms.lights = [ defs.Phong_Shader.light_source( light_position, color( 1,1,1,1 ), 1000000 ) ];
 
         // draw axis arrows.
-        // this.shapes.axis.draw(caller, this.uniforms, Mat4.identity(), this.materials.rgb);
+        this.shapes.axis.draw(caller, this.uniforms, Mat4.identity(), this.materials.rgb);
         let sky_transform = Mat4.identity().times(Mat4.scale(50,50,50));
         this.shapes.sky.draw(caller, this.uniforms, sky_transform, this.materials.sky);
         let floor_transform = Mat4.identity().times(Mat4.scale(50, 0.01, 50));
@@ -305,67 +246,17 @@ export class Bumper_cars extends Bumper_cars_base
 
     const t = this.t = this.uniforms.animation_time/1000;
 
-    // !!! Draw ground
-    // let floor_transform = Mat4.translation(0, 0, 0).times(Mat4.scale(10, 0.01, 10));
-    // this.shapes.box.draw( caller, this.uniforms, floor_transform, { ...this.materials.plastic, color: yellow } );
-
     // !!! Draw ball (for reference)
     let ball_transform = Mat4.translation(this.ball_location[0], this.ball_location[1], this.ball_location[2])
         .times(Mat4.scale(this.ball_radius, this.ball_radius, this.ball_radius));
     this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
 
-    // add some fluctuation
-    if (this.curve_fn && this.sample_cnt === this.curve.sample_count) {
-      this.curve.update(caller, this.uniforms,
-          (s) => this.curve_fn(s).plus(vec3(Math.cos(this.t * s), Math.sin(this.t), 0)) );
-    }
 
-    // TODO: you should draw spline here.
     //Rollercoaster
-    this.curve.draw(caller, this.uniforms);
-    this.curve_left.draw(caller, this.uniforms);
-    this.curve_right.draw(caller, this.uniforms);
-
-    let points_right = this.spline_right.get_points();
-    let points_left = this.spline_left.get_points();
-    //draw track
-    for (let i = 0; i < this.spline.get_size(); i++){
-      const p1 = points_left[i];
-      const p2 = points_right[i];
-      const len = (p2.minus(p1)).norm();
-      const center = (p1.plus(p2)).times(0.5);
-      let model_transform = Mat4.scale(0.05, len/2, 0.05);
-      const p = p1.minus(p2).normalized();
-      let v = vec3(0, 1, 0);
-      if(Math.abs(v.cross(p).norm()) < 0.1){
-        v = vec3(0, 0, 1);
-        model_transform = Mat4.scale(0.05, 0.05, len/2);
-      }
-      const w = v.cross(p).normalized();
-      const theta = Math.acos(v.dot(p));
-      model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
-      model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
-      this.shapes.box.draw(caller, this.uniforms, model_transform, { ...this.materials.metal, color:color(1, 0, 0, 1)})
-    }
-
-    this.sim.draw(caller, this.uniforms, this.shapes, this.materials);
+    this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
 
     // draw particle system
     this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
-    //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
-    // console.log(this.particle_simulation);
-
-    let dt = 1/60;
-    dt = Math.min(1/30, dt);
-
-    let t_next = this.t_sim + dt;
-    while(this.t_sim < t_next) {
-      let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 5),2));
-      this.sim.update(this.t_step, point1);
-      //this.particle_simulation.update(t_step);
-      // console.log(point1);
-      this.t_sim += this.t_step;
-    }
 
     // BUMPER CARS!!!!
     let friction = 1/10000;
@@ -433,56 +324,5 @@ export class Bumper_cars extends Bumper_cars_base
     this.key_triggered_button( "Run", [], this.start );
     this.new_line();
   }
-
-  parse_commands() {
-    let text = document.getElementById("input").value;
-    //TODO
-    //this.spline = new Spline();
-    const lines = text.split('\n');
-    for (const line of lines) {
-      try {
-        this._parse_line(line);
-      } catch (error) {
-        console.error(error);
-        document.getElementById("output").value = "invalid";
-        return;
-      }
-    }
-  }
-
-  _parse_line(line){
-    const words = line.trim().split(/\s+/);
-    if(words[0] === "add"){
-      const x = parseFloat(words[2]);
-      const y = parseFloat(words[3]);
-      const z = parseFloat(words[4]);
-      const tx = parseFloat(words[5]);
-      const ty = parseFloat(words[6]);
-      const tz = parseFloat(words[7]);
-      this.spline.add_points(x, y, z, tx, ty, tz);
-    }
-    else if(words[0] === "set" && words[1] === "point"){
-      let index = parseInt(words[2]);
-      this.spline.set_point(index, words[3], words[4], words[5]);
-    }
-    else if(words[0] === "set" && words[1] === "tangent"){
-      let index = parseInt(words[2]);
-      this.spline.set_tan(index, words[3], words[4], words[5]);
-    }
-    else if(words[0] === "get_arc_length"){
-      document.getElementById("output").value = this.spline._get_arc_length();
-    }
-    else{
-      throw "invalid command" + words[0];
-    }
-  }
-
-  update_scene() { // callback for Draw button
-    document.getElementById("output").value = "update_scene";
-    //TODO
-    const curve_fn = (t) => this.spline.get_positions(t);
-    this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
-  }
-
 
 }
