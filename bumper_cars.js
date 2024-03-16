@@ -471,10 +471,10 @@ export class Bumper_cars extends Bumper_cars_base
     this.human.draw(caller, this.uniforms, { ...this.materials.flesh, color : flesh});
 
     const dt_adjusted = Math.min(1 / 30, this.uniforms.animation_delta_time / 1000);
-    const t_next = t + dt_adjusted;
+    const t_n = t + dt_adjusted;
     this.right_target_pos = Array.from(this.spline.get_position(this.t - Math.floor(this.t)));
     this.left_target_pos = Array.from(this.spline2.get_position(this.t - Math.floor(this.t)));
-    for (; t <= t_next; t += 1/20 ){
+    for (; t <= t_n; t += 1/20 ){
       const k = 0.029;
       let right_curr_pos = Array.from(this.human.get_right_end_effector_position());
       let left_curr_pos = Array.from(this.human.get_left_end_effector_position())
