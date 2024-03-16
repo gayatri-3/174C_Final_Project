@@ -8,6 +8,8 @@ import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, 
 
 let lastTimestamp = performance.now() / 1000;
 
+
+
 const Car = class Car{
   constructor(x, y, z, vx = 0, vy = 0, vz = 0){
     this.x = x;
@@ -199,14 +201,15 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         const branchColor = [0.5, 0.35, 0.05, 1]; // Brown
         const leafColor = [0.0, 0.8, 0.0, 1]; // Green
         const levels = 4;
-        const branchLength = 3;
+        const branchLength = 2;
         const branchScaleFactor = 0.5; // Adjust the branch scaling factor
         const leafScaleFactor = 1; // Adjust the leaf scaling factor
         const treeTranslation = Mat4.translation(-5, -1, 5);
         this.tree = new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, treeTranslation);
 
         //fireworks init
-        this.fireworks = new FireworksDisplay(10, 10, 10, 2);
+        this.fireworks_animation = false;
+        //this.fireworks = new FireworksDisplay(10, 10, 10, 2);
 
       }
 
@@ -386,12 +389,15 @@ export class Bumper_cars extends Bumper_cars_base
     //draw tree
     this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
 
-    //draw fireworks
-    const currentTime = performance.now() / 1000; // Convert to seconds
-    const dt = currentTime - lastTimestamp;
-    lastTimestamp = currentTime;
-    this.fireworks.update(dt);
-    this.fireworks.draw(caller, this.uniforms, this.shapes, this.materials);
+    if (this.fireworks_animation) {
+      //draw fireworks
+      const currentTime = performance.now() / 1000; // Convert to seconds
+      const dt = currentTime - lastTimestamp;
+      lastTimestamp = currentTime;
+      this.fireworks.update(dt);
+      this.fireworks.draw(caller, this.uniforms, this.shapes, this.materials);
+
+    }
 
   }
 
@@ -405,6 +411,12 @@ export class Bumper_cars extends Bumper_cars_base
     this.new_line();
     this.key_triggered_button( "Run", [], this.start );
     this.new_line();
+    this.key_triggered_button("Fireworks", ["f"], this.start_fireworks.bind(this));
+  }
+
+  start_fireworks() {
+    this.fireworks_animation = true;
+    this.fireworks = new FireworksDisplay(10, 10, 10, 2);
   }
 
   parse_commands() {

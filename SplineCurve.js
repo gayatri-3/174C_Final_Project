@@ -291,7 +291,7 @@ export class Particle_Simulation {
     }
 
     draw(webgl_manager, uniform, shapes, materials, translationMatrix) {
-        const swayMagnitude = 0.1; // Adjust this value to control the maximum distance the leaves sway
+        const swayMagnitude = 0.03; // Adjust this value to control the maximum distance the leaves sway
 
         for(const p of this.particles) {
             const pos = p.pos;
@@ -309,7 +309,7 @@ export class Particle_Simulation {
             let model_transform = Mat4.identity().pre_multiply(Mat4.translation(finalPos[0], finalPos[1], finalPos[2]));
             model_transform = model_transform.times(translationMatrix);
             // Scale the branches
-            model_transform = model_transform.times(Mat4.scale(this.particleScaleFactor, this.particleScaleFactor, this.particleScaleFactor));
+            model_transform = model_transform.times(Mat4.scale(0.7, 0.7, 0.7));
 
             shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: this.particleColor});
         }
