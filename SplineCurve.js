@@ -4,7 +4,7 @@ import { Shape_From_File } from './examples/obj-file-demo.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 export class Curve_Shape extends Shape {
-    constructor(curve_function, sample_count, curve_color = color(1, 0, 0, 1)) {
+    constructor(curve_function, sample_count, curve_color = color(0, 0, 1, 1)) {
         super("position", "normal");
 
         this.material = {shader: new defs.Phong_Shader(), ambient: 1.0, color: curve_color}
@@ -341,4 +341,3 @@ export class Particle_Simulation {
         }
     }
 }
-

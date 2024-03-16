@@ -4,7 +4,15 @@ import { Shape_From_File } from './examples/obj-file-demo.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 
-import {Curve_Shape, Particle, Spring, Simulation, Particle_Simulation} from "./SplineCurve.js";
+import {
+  Curve_Shape,
+  Particle,
+  Spring,
+  Simulation,
+  Particle_Simulation,
+  Spline
+} from "./SplineCurve.js";
+import {BezierCurve, Fountain} from "./fountain.js";
 import {Rollercoaster} from "./Rollercoaster.js";
 
 const Car = class Car{
@@ -122,6 +130,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.ball_location = vec3(1, 1, 1);
         this.ball_radius = 0.25;
 
+        //Fountain
+        this.fountain = new Fountain();
+        this.fountain.init();
+
         // Rollercoaster Instance
         this.rollercoaster = new Rollercoaster();
         this.rollercoaster.add_rollercoaster();
@@ -129,6 +141,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.sample_cnt = 1000;
         this.t_step = 0.01;
         this.t_sim = 0;
+
+        this.sim_t = 0;
+        this.step_t = 0.001;
 
         // BUMPER CAR INIT
         this.starting_rot_ang = 1/50;
@@ -251,6 +266,16 @@ export class Bumper_cars extends Bumper_cars_base
         .times(Mat4.scale(this.ball_radius, this.ball_radius, this.ball_radius));
     this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
 
+    //Fountain with water drops
+    this.fountain.draw(caller, this.uniforms, this.shapes, this.materials);
+
+    let dt = 1/60;
+    dt = Math.min(1/30, dt);
+    let t_next = this.sim_t + dt;
+    while(this.sim_t < t_next) {
+      this.fountain.update(this.sim_t, dt);
+      this.sim_t += this.step_t;
+    }
 
     //Rollercoaster
     this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
