@@ -405,7 +405,7 @@ export class Rollercoaster{
 
     draw_coaster(caller, uniforms, materials){
         if(this.stage === 0){
-            this.main_ride_sample_size = 1000;
+            this.main_ride_sample_size = 800;
         }
         if(this.stage === 1){
             this.main_ride_sample_size -= 1;
@@ -434,7 +434,7 @@ export class Rollercoaster{
         }
 
         if(spline_position[0] === 15.0 && spline_position[1] === 2.0 && spline_position[2] > -26.0 && this.stage === 3){
-            this.main_ride_sample_size = 1000;
+            this.main_ride_sample_size = 800;
             this.stage = 0;
         }
 
