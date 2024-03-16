@@ -419,7 +419,19 @@ export class Bumper_cars extends Bumper_cars_base
     this.new_line();
     this.key_triggered_button( "Run", [], this.start );
     this.new_line();
+    this.key_triggered_button("Reset Bumper Cars", [], this.reset_cars);
+    this.new_line();
     this.key_triggered_button("Fireworks", ["f"], this.start_fireworks.bind(this));
+  }
+
+  reset_cars(){
+    this.starting_rot_ang = 1/50;
+    this.car1 = new Car(-10, 0, 1);
+    this.car2 = new Car(10, 0, 0);
+    this.velocities = this.car1.calculate_collision(this.car2);
+    this.velocitized = false;
+    this.collided = false;
+    this.hit_wall = false;
   }
 
   start_fireworks() {
@@ -476,6 +488,4 @@ export class Bumper_cars extends Bumper_cars_base
     const curve_fn = (t) => this.spline.get_positions(t);
     this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
   }
-
-
 }
