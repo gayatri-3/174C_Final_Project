@@ -419,7 +419,7 @@ export class Bumper_cars extends Bumper_cars_base
     this.new_line();
     this.key_triggered_button( "Run", [], this.start );
     this.new_line();
-    this.key_triggered_button("Reset Bumper Cars", [], this.reset_cars);
+    this.key_triggered_button("Reset Bumper Cars", ["Shift", "R"], this.reset_cars);
     this.new_line();
     this.key_triggered_button("Fireworks", ["f"], this.start_fireworks.bind(this));
   }
