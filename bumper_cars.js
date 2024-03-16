@@ -226,6 +226,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.spline.add_point(-6, 15.0, 62.15, -2, 0.0, 0.0);
         this.spline.add_point(-8, 25.0, 62.15, -2, 0.0, 0.0);
 
+        // comment
         this.spline2 = new Spline();
         this.spline2.add_point(5, 25.0, 62.15, -2, 0.0, 0.0);
         this.spline2.add_point(5, 15.0, 62.15, 2, 0.0, 0.0);
