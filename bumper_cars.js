@@ -147,6 +147,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.t_sim = 0;
         this.step_t = 0.001;
         this.sim_t = 0;
+        this.random_colors = [];
+        for (var i = 0; i < 8; i++) {
+          this.random_colors.push(color(Math.random(), Math.random(), Math.random(), 1)); // Adjust the range as needed
+        }
 /*
         const curve_fn = (t) => this.spline.get_position(t);
         this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
@@ -303,7 +307,17 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // ferris wheel init
         this.ferris_wheel_base_transform = Mat4.identity().times(Mat4.translation(25, 20, 1)).times(Mat4.scale(10, 10, 10));
-        this.ferris_wheel_car_transform = Mat4.identity().times(Mat4.translation(25, 15, 19)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
+        this.ferris_wheel_car_transforms = [
+          Mat4.identity().times(Mat4.translation(25, 15, 19)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 5, 12)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 2, 1)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 5, -10)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 15, -15)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 27, -10)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 33, 1)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 28, 12)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+        ];
+        
       }
     }
 
@@ -461,10 +475,23 @@ export class Bumper_cars extends Bumper_cars_base
 
     // ferris wheel
     // ferris wheel center: 25, 20, 1
-    this.ferris_wheel_base_transform = this.ferris_wheel_base_transform.times(Mat4.rotation(t, 1, 0, 0));
+    this.ferris_wheel_base_transform = this.ferris_wheel_base_transform.times(Mat4.rotation(t / 2, 1, 0, 0));
     this.shapes['ferris-wheel-base'].draw(caller, this.uniforms, this.ferris_wheel_base_transform, this.materials.bumper_car_floor);
-    this.ferris_wheel_car_transform = this.ferris_wheel_car_transform.pre_multiply(Mat4.translation(0, 2 + 15 * Math.cos(t),  -18 + (5 * Math.PI * Math.sin(t))));
-    this.shapes['ferris-wheel-car'].draw(caller, this.uniforms, this.ferris_wheel_car_transform, this.materials.flesh);
+    this.shapes.box.draw(caller, this.uniforms, Mat4.identity().pre_multiply(Mat4.translation(18, 3, -2).times(Mat4.scale(1, 15, 1))).times(Mat4.rotation(45, 1, 0, 0)), this.materials.bumper_car_floor);
+    this.shapes.box.draw(caller, this.uniforms, Mat4.identity().pre_multiply(Mat4.translation(18, 3, 4).times(Mat4.scale(1, 15, 1))).times(Mat4.rotation(-45, 1, 0, 0)), this.materials.bumper_car_floor);
+    this.ferris_wheel_car_transforms = [
+      this.ferris_wheel_car_transforms[0].pre_multiply(Mat4.translation(0, 2 + 15.3 * Math.cos((t / 2)),  -18 + (5 * Math.PI * Math.sin((t / 2))))),
+      this.ferris_wheel_car_transforms[1].pre_multiply(Mat4.translation(0, 12 + 15.3 * Math.cos(Math.PI + (t / 2)),  -12 + (5 * Math.PI * Math.sin(Math.PI + (t / 2))))),
+      this.ferris_wheel_car_transforms[2].pre_multiply(Mat4.translation(0, 15 + 15.3 * Math.cos((5 * Math.PI / 4) + (t / 2)),   + (5 * Math.PI * Math.sin((5 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[3].pre_multiply(Mat4.translation(0, 12 + 15.3 * Math.cos((3 * Math.PI / 4) + (t / 2)),  10 + (5 * Math.PI * Math.sin((3 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[4].pre_multiply(Mat4.translation(0, 2 + 15.3 * Math.cos((6 * Math.PI / 4) + (t / 2)),  16 + (5 * Math.PI * Math.sin((6 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[5].pre_multiply(Mat4.translation(0, -10 + 15.3 * Math.cos((2 * Math.PI / 4) + (t / 2)),  11 + (5 * Math.PI * Math.sin((2 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[6].pre_multiply(Mat4.translation(0, -16 + 15 * Math.cos((Math.PI / 4) + (t / 2)),  0 + (5 * Math.PI * Math.sin((Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[7].pre_multiply(Mat4.translation(0, -12 + 15 * Math.cos((7 * Math.PI / 4) + (t / 2)),  -11 + (5 * Math.PI * Math.sin((7 * Math.PI / 4) + (t / 2))))),
+    ]
+    for (let i = 0; i < this.ferris_wheel_car_transforms.length; i++){
+      this.shapes['ferris-wheel-car'].draw(caller, this.uniforms, this.ferris_wheel_car_transforms[i], {...this.materials.metal, color : this.random_colors[i]});
+    }
 
     // animatronic
     let lu_leg_transform = Mat4.scale(0.4, 1.6, .6);
