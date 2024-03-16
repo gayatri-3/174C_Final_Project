@@ -4,6 +4,7 @@ import { Shape_From_File } from './examples/obj-file-demo.js';
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
 
+import {Rollercoaster} from "./Rollercoaster.js";
 import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer, FireworksDisplay} from "./SplineCurve.js";
 
 let lastTimestamp = performance.now() / 1000;
@@ -18,6 +19,9 @@ const Car = class Car{
     this.vx = vx;
     this.vy = vy;
     this.vz = vz;
+    this.wx = 0;
+    this.wy = 0;
+    this.wz = 0;
 
     this.mass = 1;
 
@@ -30,7 +34,7 @@ const Car = class Car{
   }
 
   transform(context, program_state, transform){
-    let car_transform = transform.times(Mat4.translation(this.x, this.y, this.z));
+    let car_transform = transform.times(Mat4.translation(this.x, this.y, this.z)).times(Mat4.rotation(this.wy, 0, 1, 0));
     this.car.draw(context, program_state, car_transform, this.material);
   }
 
@@ -48,6 +52,12 @@ const Car = class Car{
     this.vx = vx;
     this.vy = vy;
     this.vz = vz;
+  }
+
+  update_rot(wx = this.wx, wy = this.wy, wz = this.wz){
+    this.wx = wx;
+    this.wy = wy;
+    this.wz = wz;
   }
   has_collided(obj2){
     let collisionX = Math.abs(this.x - obj2.x) < 2 * ((this.x_dim) + (obj2.x_dim));
@@ -90,6 +100,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'ball' : new defs.Subdivision_Sphere( 4 ),
           'axis' : new defs.Axis_Arrows(),
           'sky': new defs.Subdivision_Sphere(4),
+          'fence' : new Shape_From_File("./assets/fence/fence.obj")
         };
 
         this.curve_fn = null;
@@ -105,40 +116,19 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         const tex_phong = new defs.Textured_Phong();
         this.materials = {};
         this.materials.plastic = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) }
+        this.materials.bumper_car_floor = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .64,.64,.64,1 ) }
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
-        // this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
+        this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
+        //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
+        //this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_cartoon.png")}
         this.ball_location = vec3(1, 1, 1);
         this.ball_radius = 0.25;
 
-        // TODO: you should create a Spline class instance
-        this.spline = new Spline();
-        this.spline_left = new Spline();
-        this.spline_right = new Spline();
-        // this.spline.add_point(2.0, 8.0, 0.0, -10.0, 0.0, 20.0);
-        // this.spline.add_point(4.0, 7.0, 5.0, 20.0, 0.0, 20.0);
-        // this.spline.add_point(6.0, 6.0, 3.0, 20.0, 0.0, -10.0);
-        // this.spline.add_point(5.0, 9.0, 9.0, -20.0, 0.0, -20.0);
-        // this.spline.add_point(2.0, 8.0, 0.0, -20.0, 0.0, 20.0);
-
-        this.spline_left.add_point(0.0, 5.0, 0.0, -20.0, 0.0, 20.0);
-        this.spline_left.add_point(0.0, 5.0, 5.0, 20.0, 0.0, 20.0);
-        this.spline_left.add_point(5.0, 5.0, 5.0, 20.0, 0.0, -20.0);
-        this.spline_left.add_point(5.0, 5.0, 0.0, -20.0, 0.0, -20.0);
-        this.spline_left.add_point(0.0, 5.0, 0.0, -20.0, 0.0, 20.0);
-
-        this.spline_right.add_point(-1, 5.0, -1, -24.0, 0.0, 24.0);
-        this.spline_right.add_point(-1, 5.0, 6, 24.0, 0.0, 24.0);
-        this.spline_right.add_point(6, 5.0, 6, 24.0, 0.0, -24.0);
-        this.spline_right.add_point(6, 5.0, -1, -24.0, 0.0, -24.0);
-        this.spline_right.add_point(-1, 5.0, -1, -24.0, 0.0, 24.0);
-
-        this.spline.add_point(-0.5, 5.0, -0.5, -22.0, 0.0, 22.0);
-        this.spline.add_point(-0.5, 5.0, 5.5, 22.0, 0.0, 22.0);
-        this.spline.add_point(5.5, 5.0, 5.5, 22.0, 0.0, -22.0);
-        this.spline.add_point(5.5, 5.0, -0.5, -22.0, 0.0, -22.0);
-        this.spline.add_point(-0.5, 5.0, -0.5, -22.0, 0.0, 22.0);
+        // Rollercoaster Instance
+        this.rollercoaster = new Rollercoaster();
+        this.rollercoaster.add_rollercoaster();
 
         this.sample_cnt = 1000;
         this.t_step = 0.01;
@@ -181,9 +171,13 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.sim.g_acc = vec3(0, -9.8, 0);
 
         // BUMPER CAR INIT
+        this.starting_rot_ang = 1/50;
         this.car1 = new Car(-10, 0, 1);
         this.car2 = new Car(10, 0, 0);
+        this.velocities = this.car1.calculate_collision(this.car2);
+        this.velocitized = false;
         this.collided = false;
+        this.hit_wall = false;
 
         //particle system simulation init
         //this.particle_simulation = new Particle_Simulation();
@@ -249,10 +243,22 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // draw axis arrows.
         // this.shapes.axis.draw(caller, this.uniforms, Mat4.identity(), this.materials.rgb);
-        let sky_transform = Mat4.identity().times(Mat4.scale(50,50,50));
+        let sky_transform = Mat4.identity().times(Mat4.scale(60,60,60));
         this.shapes.sky.draw(caller, this.uniforms, sky_transform, this.materials.sky);
-        let floor_transform = Mat4.identity().times(Mat4.scale(50, 0.01, 50));
+        let floor_transform = Mat4.identity().times(Mat4.scale(60, 0.01, 60));
         this.shapes.box.draw(caller, this.uniforms, floor_transform, this.materials.ground);
+
+        // bumper car scenery
+        let bumper_floor_transform = Mat4.identity().times(Mat4.translation(-1, 0.1, -6)).times(Mat4.scale(8, 0.01, 8));
+        this.shapes.box.draw(caller, this.uniforms, bumper_floor_transform, this.materials.bumper_car_floor);
+        let fence1_transform = Mat4.identity().times(Mat4.translation(-1, 0, 2)).times(Mat4.scale(4.5, 5, 5));
+        this.shapes.fence.draw(caller, this.uniforms, fence1_transform, this.materials.bumper_car_floor);
+        let fence2_transform = Mat4.identity().times(Mat4.translation(-1, 0, -14)).times(Mat4.scale(4.5, 5, 5));
+        this.shapes.fence.draw(caller, this.uniforms, fence2_transform, this.materials.bumper_car_floor);
+        let fence3_transform = Mat4.identity().times(Mat4.translation(7, 0, -6)).times(Mat4.scale(4.5, 5, 4.5)).times(Mat4.rotation(83.25, 0, 1, 0));
+        this.shapes.fence.draw(caller, this.uniforms, fence3_transform, this.materials.bumper_car_floor);
+        let fence4_transform = Mat4.identity().times(Mat4.translation(-9, 0, -6)).times(Mat4.scale(4.5, 5, 4.5)).times(Mat4.rotation(83.25, 0, 1, 0));
+        this.shapes.fence.draw(caller, this.uniforms, fence4_transform, this.materials.bumper_car_floor);
       }
     }
 
@@ -313,35 +319,11 @@ export class Bumper_cars extends Bumper_cars_base
 
     // TODO: you should draw spline here.
     //Rollercoaster
-    this.curve.draw(caller, this.uniforms);
-    this.curve_left.draw(caller, this.uniforms);
-    this.curve_right.draw(caller, this.uniforms);
-
-    let points_right = this.spline_right.get_points();
-    let points_left = this.spline_left.get_points();
-    //draw track
-    for (let i = 0; i < this.spline.get_size(); i++){
-      const p1 = points_left[i];
-      const p2 = points_right[i];
-      const len = (p2.minus(p1)).norm();
-      const center = (p1.plus(p2)).times(0.5);
-      let model_transform = Mat4.scale(0.05, len/2, 0.05);
-      const p = p1.minus(p2).normalized();
-      let v = vec3(0, 1, 0);
-      if(Math.abs(v.cross(p).norm()) < 0.1){
-        v = vec3(0, 0, 1);
-        model_transform = Mat4.scale(0.05, 0.05, len/2);
-      }
-      const w = v.cross(p).normalized();
-      const theta = Math.acos(v.dot(p));
-      model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
-      model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
-      this.shapes.box.draw(caller, this.uniforms, model_transform, { ...this.materials.metal, color:color(1, 0, 0, 1)})
-    }
-
-    this.sim.draw(caller, this.uniforms, this.shapes, this.materials);
+    this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
 
     // draw particle system
+    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
+
 //    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
     //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
 //    console.log(this.particle_simulation);
@@ -361,28 +343,54 @@ export class Bumper_cars extends Bumper_cars_base
     }
 */
     // BUMPER CARS!!!!
+    let friction = 1/10000;
+    let translational_friction = 1/100;
     let bumper_car_transform = Mat4.rotation(-90, 0, 1, 0).times(Mat4.translation(0,0.5,0));
     // this.shapes.box.draw(caller, this.uniforms, bumper_car_transform, {...this.materials.metal, color: red});
     this.car1.transform(caller, this.uniforms, bumper_car_transform);
     let bumper_car2_transform = Mat4.rotation(90, 0, 1, 0).times(Mat4.translation(0, 0.5, 0));
     this.car2.transform(caller, this.uniforms, bumper_car2_transform);
-    if (this.car1.has_collided(this.car2))
+    if (this.car1.has_collided(this.car2)){
       this.collided = true;
+    }
     if (!this.collided){
       if (this.car1.x < 10){
-        this.car1.update_pos(2, 0);
-        this.car1.update_velocity(2, 0, 0);
+        this.car1.update_pos(5, 0);
+        this.car1.update_velocity(5, 0, 0);
       }
       if (this.car2.x > -10){
-        this.car2.update_pos(-2, 0);
-        this.car2.update_velocity(-2, 0, 0);
+        this.car2.update_pos(-5, 0);
+        this.car2.update_velocity(-5, 0, 0);
       }
     }
-    else {
-      let velocities = this.car1.calculate_collision(this.car2);
-      this.car1.update_pos(velocities[0][0], -1);
-      this.car2.update_pos(velocities[1][0], 1);
-      console.log(velocities);
+    // rotation case
+    else if (!this.hit_wall){
+      if (!this.velocitized){
+        this.velocities = this.car1.calculate_collision(this.car2);
+        this.velocitized = true;
+      }
+      if (Math.abs(this.velocities[0][0]) > 0 && this.starting_rot_ang > 0){
+        this.car1.update_pos(this.velocities[0][0], -1);
+        this.car2.update_pos(this.velocities[1][0], 1);
+        this.velocities[0][0] += translational_friction;
+        this.velocities[1][0] -= translational_friction;
+      }
+      if (this.starting_rot_ang > 0){
+        this.car1.update_rot(this.car1.wx, this.car1.wy + this.starting_rot_ang, this.car1.wz);
+        this.car2.update_rot(this.car2.wx, this.car2.wy - this.starting_rot_ang, this.car2.wz);
+      }
+      this.starting_rot_ang -= friction;
+    }
+    if (this.car1.x < -14)
+      this.hit_wall  = true;
+    if (this.hit_wall && this.car1.vx > 0){
+      this.starting_rot_ang = 1/50;
+      this.car1.update_pos(this.car1.vx, 0);
+      this.car2.update_pos(this.car2.vx, 0);
+      this.car1.update_rot(this.car1.wx, this.car1.wy + this.starting_rot_ang, this.car1.wz);
+      this.car2.update_rot(this.car2.wx, this.car2.wy - this.starting_rot_ang, this.car2.wz);
+      this.car1.vx -= 3 * translational_friction;
+      this.car2.vx += 3 * translational_friction;
     }
     console.log("Collision?: " + this.car1.has_collided(this.car2));
 

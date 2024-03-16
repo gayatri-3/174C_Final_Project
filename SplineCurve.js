@@ -1,4 +1,5 @@
 import {tiny, defs} from './examples/common.js';
+import { Shape_From_File } from './examples/obj-file-demo.js';
 
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
@@ -28,6 +29,7 @@ export class Spline {
         this.points = [];
         this.tangents = [];
         this.size = 0;
+        this.car = new Shape_From_File('./assets/bumper_cars/bumper_car.obj');
     }
 
     add_point(x, y, z, tx, ty, tz) {
@@ -153,6 +155,7 @@ export class Simulation {
         this.g_acc = 0;
         this.ground_ks = 0;
         this.ground_kd = 0;
+        this.car = new Shape_From_File('./assets/bumper_cars/bumper_car.obj');
     }
 
     update(dt, point1) {
@@ -207,7 +210,7 @@ export class Simulation {
             let model_transform = Mat4.identity().pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
             model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
             model_transform = model_transform.times(Mat4.translation(0, 1, 0));
-            //shapes.box.draw( webgl_manager, uniform, model_transform, { ...materials.plastic, color: blue } );
+            this.car.draw( webgl_manager, uniform, model_transform, { ...materials.plastic, color: blue } );
 
         }
 
