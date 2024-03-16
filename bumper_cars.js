@@ -133,7 +133,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.sample_cnt = 1000;
         this.t_step = 0.01;
         this.t_sim = 0;
-
+/*
         const curve_fn = (t) => this.spline.get_position(t);
         this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
 
@@ -154,7 +154,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           this.sim.particles.push(particle);
         }
 
-
+*/
 
         // for(let i = 0; i < num -1; i++) {
         //   let spring = new Spring();
@@ -165,11 +165,11 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         //   spring.rest_length = 1;
         //   this.sim.springs.push(spring);
         // }
-
+/*
         this.sim.ground_ks = 5000;
         this.sim.ground_kd = 1;
         this.sim.g_acc = vec3(0, -9.8, 0);
-
+*/
         // BUMPER CAR INIT
         this.starting_rot_ang = 1/50;
         this.car1 = new Car(-10, 0, 1);
@@ -322,7 +322,7 @@ export class Bumper_cars extends Bumper_cars_base
     this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
 
     // draw particle system
-    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
+    //this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
 
 //    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
     //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
