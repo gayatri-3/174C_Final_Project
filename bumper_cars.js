@@ -26,7 +26,7 @@ const Car = class Car{
     this.z_dim = 2.8;
     
     this.car = new Shape_From_File('./assets/bumper_cars/bumper_car.obj');
-    this.material = { shader: new defs.Phong_Shader, ambient: .2, diffusivity: 1, specularity: .5, color: color( 1.0, 0, 0,1 ) }
+    this.material = { shader: new defs.Phong_Shader, ambient: .2, diffusivity: 1, specularity: .5, color: color( .3, .3, .3, 1 ) }
   }
 
   transform(context, program_state, transform){
@@ -171,7 +171,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           // perspective() are field of view, aspect ratio, and distances to the near plane and far plane.
 
           // !!! Camera changed here
-          Shader.assign_camera( Mat4.look_at (vec3 (20, 20, 20), vec3 (0, 0, 0), vec3 (0, 1, 0)), this.uniforms );
+          Shader.assign_camera( Mat4.look_at (vec3 (25, 25, 25), vec3 (10, 15, 0), vec3 (0, 1, 0)), this.uniforms );
         }
         this.uniforms.projection_transform = Mat4.perspective( Math.PI/4, caller.width/caller.height, 1, 100 );
 
@@ -188,9 +188,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // draw axis arrows.
         // this.shapes.axis.draw(caller, this.uniforms, Mat4.identity(), this.materials.rgb);
-        let sky_transform = Mat4.identity().times(Mat4.scale(60,60,60));
+        let sky_transform = Mat4.identity().times(Mat4.scale(50,50,50));
         this.shapes.sky.draw(caller, this.uniforms, sky_transform, this.materials.sky);
-        let floor_transform = Mat4.identity().times(Mat4.scale(60, 0.01, 60));
+        let floor_transform = Mat4.identity().times(Mat4.scale(50, 0.01, 50));
         this.shapes.box.draw(caller, this.uniforms, floor_transform, this.materials.ground);
 
         // bumper car scenery
@@ -246,10 +246,10 @@ export class Bumper_cars extends Bumper_cars_base
 
     const t = this.t = this.uniforms.animation_time/1000;
 
-    // !!! Draw ball (for reference)
-    let ball_transform = Mat4.translation(this.ball_location[0], this.ball_location[1], this.ball_location[2])
-        .times(Mat4.scale(this.ball_radius, this.ball_radius, this.ball_radius));
-    this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
+    // // !!! Draw ball (for reference)
+    // let ball_transform = Mat4.translation(this.ball_location[0], this.ball_location[1], this.ball_location[2])
+    //     .times(Mat4.scale(this.ball_radius, this.ball_radius, this.ball_radius));
+    // this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
 
 
     //Rollercoaster
