@@ -187,10 +187,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.uniforms.lights = [ defs.Phong_Shader.light_source( light_position, color( 1,1,1,1 ), 1000000 ) ];
 
         // draw axis arrows.
-        this.shapes.axis.draw(caller, this.uniforms, Mat4.identity(), this.materials.rgb);
-        let sky_transform = Mat4.identity().times(Mat4.scale(50,50,50));
+        // this.shapes.axis.draw(caller, this.uniforms, Mat4.identity(), this.materials.rgb);
+        let sky_transform = Mat4.identity().times(Mat4.scale(60,60,60));
         this.shapes.sky.draw(caller, this.uniforms, sky_transform, this.materials.sky);
-        let floor_transform = Mat4.identity().times(Mat4.scale(50, 0.01, 50));
+        let floor_transform = Mat4.identity().times(Mat4.scale(60, 0.01, 60));
         this.shapes.box.draw(caller, this.uniforms, floor_transform, this.materials.ground);
 
         // bumper car scenery
