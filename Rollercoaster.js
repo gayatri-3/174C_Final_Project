@@ -417,7 +417,7 @@ export class Rollercoaster{
         let spline_position = this.spline.get_position(this.spline_t);
         this.spline_t += 1/this.main_ride_sample_size;
 
-        console.log("Spline position: ", spline_position);
+        // console.log("Spline position: ", spline_position);
         if(spline_position[1] > 16.0 && spline_position[0] <= 0.0 && this.stage === 0){
             this.main_ride_sample_size = 200;
             this.stage = 1;

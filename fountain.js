@@ -121,7 +121,7 @@ export class Fountain {
             for(let j = 0; j < this.numDrops; j++) {
                 t = t - (j/this.numDrops);
                 if(t < 0) t = 0;
-                console.log("i: " + i + ", j: " + j + ", t: " + t);
+                // console.log("i: " + i + ", j: " + j + ", t: " + t);
                 this.drops[i][j].update(this.fountain[i].get_position(t), dt);
             }
         }

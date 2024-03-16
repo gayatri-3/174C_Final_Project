@@ -15,7 +15,7 @@ class Articulated_Human {
         const sphere_shape = shapes.sphere;
 
         // torso node
-        const torso_transform = Mat4.scale(1, 2.5, 0.5);
+        const torso_transform = Mat4.scale(1, 2, 1);
         this.torso_node = new Node("torso", sphere_shape, torso_transform);
         // root->torso
         const root_location = Mat4.translation(-1.5, 5, 2);

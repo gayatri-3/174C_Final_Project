@@ -1,6 +1,6 @@
 import {tiny, defs} from './examples/common.js';
 import { Shape_From_File } from './examples/obj-file-demo.js';
-import { Articulated_Human } from '../cs-174c-assignment-2/human.js';
+import { Articulated_Human } from './human.js';
 
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
@@ -435,7 +435,7 @@ export class Bumper_cars extends Bumper_cars_base
       this.car1.vx -= 3 * translational_friction;
       this.car2.vx += 3 * translational_friction;
     }
-    console.log("Collision?: " + this.car1.has_collided(this.car2));
+    // console.log("Collision?: " + this.car1.has_collided(this.car2));
 
     //draw tree
     this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
