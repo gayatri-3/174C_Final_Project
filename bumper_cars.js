@@ -104,6 +104,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'sky': new defs.Subdivision_Sphere(4),
           'fence' : new Shape_From_File("./assets/fence/fence.obj"),
           'human': new Articulated_Human(),
+          'cylinder' : new defs.Cylindrical_Tube(10, 10),
+          'cone' : new defs.Cone_Tip(10, 10),
           'ferris-wheel-base' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel2.obj"),
           'ferris-wheel-car' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel_car.obj")
         };
@@ -223,7 +225,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         //this.fireworks = new FireworksDisplay(10, 10, 10, 2);
 
         // animatronic
-        this.spline = new Spline(); 
+        this.spline = new Spline();
         this.spline.add_point(-8, 25.0, 62.15, 2, 0.0, 0.0);
         this.spline.add_point(-6, 15.0, 62.15, -2, 0.0, 0.0);
         this.spline.add_point(-8, 25.0, 62.15, -2, 0.0, 0.0);
@@ -447,7 +449,8 @@ export class Bumper_cars extends Bumper_cars_base
     //draw tree
     this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
 
-    if (this.fireworks_animation) {
+    // draw fireworks when button pressed
+    if (this.fireworks_animation === true) {
       //draw fireworks
       const currentTime = performance.now() / 1000; // Convert to seconds
       const dt = currentTime - lastTimestamp;
@@ -511,7 +514,7 @@ export class Bumper_cars extends Bumper_cars_base
           sum[i] = this.human.right_theta[i] + dtheta[i];
         }
       }
-      
+
       const k2 = 0.01;
       if (left_error_dist >= k2){
         let dx = math.multiply(7, math.multiply(k2, left_E));
@@ -556,7 +559,7 @@ export class Bumper_cars extends Bumper_cars_base
 
   start_fireworks() {
     this.fireworks_animation = true;
-    this.fireworks = new FireworksDisplay(10, 10, 10, 2);
+    this.fireworks = new FireworksDisplay(20, 100, 30, 2);
   }
 
   parse_commands() {
