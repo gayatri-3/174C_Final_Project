@@ -107,7 +107,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'cylinder' : new defs.Cylindrical_Tube(10, 10),
           'cone' : new defs.Cone_Tip(10, 10),
           'ferris-wheel-base' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel2.obj"),
-          'ferris-wheel-car' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel_car.obj")
+          'ferris-wheel-car' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel_car.obj"),
+          'mascot-head' : new Shape_From_File("./assets/mascot/mascot.obj")
         };
 
         this.curve_fn = null;
@@ -317,7 +318,6 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           Mat4.identity().times(Mat4.translation(25, 33, 1)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
           Mat4.identity().times(Mat4.translation(25, 28, 12)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
         ];
-        
       }
     }
 
@@ -494,25 +494,38 @@ export class Bumper_cars extends Bumper_cars_base
     }
 
     // animatronic
+    // mascot
+    let head_transform = Mat4.scale(2, 2, 2).pre_multiply(Mat4.translation(-3, 17, 35).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes['mascot-head'].draw(caller, this.uniforms, head_transform, {...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1) });
+    let eye1_transform = Mat4.scale(0.2, 0.2, 0.2).pre_multiply(Mat4.translation(-4, 17, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, eye1_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let eye2_transform = Mat4.scale(0.2, 0.2, 0.2).pre_multiply(Mat4.translation(-2, 17, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, eye2_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let mouth_transform = Mat4.scale(0.4, 0.3, 0.7).pre_multiply(Mat4.translation(-3, 16.5, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, mouth_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let mouth2_transform = Mat4.scale(0.2, 0.05, 0.7).pre_multiply(Mat4.translation(-3.1, 15.5, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.box.draw(caller, this.uniforms, mouth2_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let belly_transform = Mat4.scale(1, 3, 1.5).pre_multiply(Mat4.translation(-3.1, 10, 34.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, belly_transform, {...this.materials.plastic, color : flesh });
     let lu_leg_transform = Mat4.scale(0.4, 1.6, .6);
     lu_leg_transform.pre_multiply(Mat4.translation(-4.2, 5, 35));
-    this.shapes.ball.draw(caller, this.uniforms, lu_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, lu_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let ll_leg_transform = Mat4.scale(0.4, 2, .2);
     ll_leg_transform.pre_multiply(Mat4.translation(-4.2, 1.8, 35));
-    this.shapes.ball.draw(caller, this.uniforms, ll_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, ll_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let ru_leg_transform = Mat4.scale(0.4, 1.6, .6);
     ru_leg_transform.pre_multiply(Mat4.translation(-1.8, 5, 35));
-    this.shapes.ball.draw(caller, this.uniforms, ru_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, ru_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let rl_leg_transform = Mat4.scale(0.4, 2, .2);
     rl_leg_transform.pre_multiply(Mat4.translation(-1.8, 1.8, 35));
-    this.shapes.ball.draw(caller, this.uniforms, rl_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, rl_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let l_foot_transform = Mat4.scale(1, 1, 1);
     l_foot_transform.pre_multiply(Mat4.translation(-4.2, 0.6, 34.65));
-    this.shapes.ball.draw(caller, this.uniforms, l_foot_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, l_foot_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let r_foot_transform = Mat4.scale(1, 1, 1);
     r_foot_transform.pre_multiply(Mat4.translation(-1.8, 0.6, 34.65));
-    this.shapes.ball.draw(caller, this.uniforms, r_foot_transform, { ...this.materials.flesh, color : flesh});
-    this.human.draw(caller, this.uniforms, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, r_foot_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
+    this.human.draw(caller, this.uniforms, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
 
     const dt_adjusted = Math.min(1 / 30, this.uniforms.animation_delta_time / 1000);
     const t_n = t + dt_adjusted;
