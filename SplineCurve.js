@@ -481,9 +481,10 @@ export class FireworksDisplay {
 
     createFirework() {
         const randomColor = color(Math.random(), Math.random(), Math.random(), 1.0);
+        const startingVector = vec3(-30,0,-40);
         const fireworks = new Firework(
-            vec3(Math.random() * this.canvasWidth, Math.random() * this.canvasHeight, Math.random() * this.canvasWidth),
-            vec3(0, 10 + Math.random() * 10, 0), // Initial velocity (upward)
+            vec3((Math.random() * this.canvasWidth) + startingVector[0], (Math.random() * this.canvasHeight) + startingVector[1],startingVector[2]),
+            vec3(0, 15 + Math.random() * 10, 0), // Initial velocity (upward)
             randomColor,
             this.maxBursts // Pass maxBursts to Firework constructor
         );
@@ -546,3 +547,50 @@ export class FireworksDisplay {
         }
     }
 }
+/*
+export class CarnivalStand {
+    constructor() {
+        // Material properties
+        //this.material = { ambient: 0.4, diffusivity: 0.6, color: color(0, 0, 1, 1) };
+        this.blue = color(0,0,1,1);
+    }
+
+    draw(webgl_manager, uniform, shapes, model_transform, materials) {
+        // Draw base (box)
+        let base_transform = model_transform.times(Mat4.translation(0, 1, 0)).times(Mat4.scale(3, 2, 3));
+        //shapes.box.draw(webgl_manager, uniform, base_transform, {...materials.plastic, color: this.blue});
+
+        // Draw pillars (cylinders)
+        let pillar_transform = Mat4.identity()
+            .times(Mat4.translation(-0.4, 0, 0)) // First, apply translation
+            .times(Mat4.scale(0.5, 0.5, 4)) // Then apply scaling
+            .times(Mat4.rotation(Math.PI / 2, vec3(0, 0, 1))); // Finally, rotate by 90 degrees around the z-axis
+
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+
+        pillar_transform = model_transform.times(Mat4.translation(0.4, 0, 0))
+            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
+            .times(Mat4.scale(0.1, 0.1, 1));
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+
+        pillar_transform = model_transform.times(Mat4.translation(0, -0.4, 0))
+            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
+            .times(Mat4.scale(0.1, 0.1, 1));
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+
+        pillar_transform = model_transform.times(Mat4.translation(0, 0.4, 0))
+            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
+            .times(Mat4.scale(0.1, 0.1, 1));
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+
+        // Draw top (cone)
+        let cone_transform = model_transform.times(Mat4.translation(0, 0, 1))
+            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
+            .times(Mat4.scale(0.7, 0.7, 0.7));
+        shapes.cone.draw(webgl_manager, uniform, cone_transform, {...materials.plastic, color: this.blue});
+
+
+    }
+}
+
+*/

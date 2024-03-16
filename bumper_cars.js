@@ -104,6 +104,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'sky': new defs.Subdivision_Sphere(4),
           'fence' : new Shape_From_File("./assets/fence/fence.obj"),
           'human': new Articulated_Human(),
+          'cylinder' : new defs.Cylindrical_Tube(10, 10),
+          'cone' : new defs.Cone_Tip(10, 10),
+          'ferris-wheel-base' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel2.obj"),
+          'ferris-wheel-car' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel_car.obj")
         };
 
         this.curve_fn = null;
@@ -221,16 +225,16 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         //this.fireworks = new FireworksDisplay(10, 10, 10, 2);
 
         // animatronic
-        this.spline = new Spline(); 
+        this.spline = new Spline();
         this.spline.add_point(-8, 25.0, 62.15, 2, 0.0, 0.0);
         this.spline.add_point(-6, 15.0, 62.15, -2, 0.0, 0.0);
         this.spline.add_point(-8, 25.0, 62.15, -2, 0.0, 0.0);
 
         // comment
         this.spline2 = new Spline();
-        this.spline2.add_point(5, 25.0, 62.15, -2, 0.0, 0.0);
-        this.spline2.add_point(5, 15.0, 62.15, 2, 0.0, 0.0);
-        this.spline2.add_point(5, 25.0, 62.15, 4, 0.0, 0.0);
+        this.spline2.add_point(-3, 25.0, 62.15, -2, 0.0, 0.0);
+        this.spline2.add_point(-3, 15.0, 62.15, 2, 0.0, 0.0);
+        this.spline2.add_point(-3, 25.0, 62.15, 4, 0.0, 0.0);
         
         const curve_fn = (t) => this.spline.get_position(t);
         const curve_fn2 = (t) => this.spline2.get_position(t);
@@ -296,6 +300,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.shapes.fence.draw(caller, this.uniforms, fence3_transform, this.materials.bumper_car_floor);
         let fence4_transform = Mat4.identity().times(Mat4.translation(-9, 0, -6)).times(Mat4.scale(4.5, 5, 4.5)).times(Mat4.rotation(83.25, 0, 1, 0));
         this.shapes.fence.draw(caller, this.uniforms, fence4_transform, this.materials.bumper_car_floor);
+
+        // ferris wheel init
+        this.ferris_wheel_base_transform = Mat4.identity().times(Mat4.translation(25, 20, 1)).times(Mat4.scale(10, 10, 10));
+        this.ferris_wheel_car_transform = Mat4.identity().times(Mat4.translation(25, 15, 19)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
       }
     }
 
@@ -441,7 +449,8 @@ export class Bumper_cars extends Bumper_cars_base
     //draw tree
     this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
 
-    if (this.fireworks_animation) {
+    // draw fireworks when button pressed
+    if (this.fireworks_animation === true) {
       //draw fireworks
       const currentTime = performance.now() / 1000; // Convert to seconds
       const dt = currentTime - lastTimestamp;
@@ -449,6 +458,13 @@ export class Bumper_cars extends Bumper_cars_base
       this.fireworks.update(dt);
       this.fireworks.draw(caller, this.uniforms, this.shapes, this.materials);
     }
+
+    // ferris wheel
+    // ferris wheel center: 25, 20, 1
+    this.ferris_wheel_base_transform = this.ferris_wheel_base_transform.times(Mat4.rotation(t, 1, 0, 0));
+    this.shapes['ferris-wheel-base'].draw(caller, this.uniforms, this.ferris_wheel_base_transform, this.materials.bumper_car_floor);
+    this.ferris_wheel_car_transform = this.ferris_wheel_car_transform.pre_multiply(Mat4.translation(0, 2 + 15 * Math.cos(t),  -18 + (5 * Math.PI * Math.sin(t))));
+    this.shapes['ferris-wheel-car'].draw(caller, this.uniforms, this.ferris_wheel_car_transform, this.materials.flesh);
 
     // animatronic
     let lu_leg_transform = Mat4.scale(0.4, 1.6, .6);
@@ -498,7 +514,7 @@ export class Bumper_cars extends Bumper_cars_base
           sum[i] = this.human.right_theta[i] + dtheta[i];
         }
       }
-      
+
       const k2 = 0.01;
       if (left_error_dist >= k2){
         let dx = math.multiply(7, math.multiply(k2, left_E));
@@ -543,7 +559,7 @@ export class Bumper_cars extends Bumper_cars_base
 
   start_fireworks() {
     this.fireworks_animation = true;
-    this.fireworks = new FireworksDisplay(10, 10, 10, 2);
+    this.fireworks = new FireworksDisplay(20, 100, 30, 2);
   }
 
   parse_commands() {
