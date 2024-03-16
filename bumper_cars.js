@@ -7,7 +7,7 @@ const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } =
 
 import {BezierCurve, Fountain} from "./fountain.js";
 import {Rollercoaster} from "./Rollercoaster.js";
-import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer, FireworksDisplay} from "./SplineCurve.js";
+import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer, FireworksDisplay, CarnivalStand} from "./SplineCurve.js";
 
 let lastTimestamp = performance.now() / 1000;
 
@@ -104,8 +104,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'sky': new defs.Subdivision_Sphere(4),
           'fence' : new Shape_From_File("./assets/fence/fence.obj"),
           'human': new Articulated_Human(),
-          'cylinder' : new defs.Cylindrical_Tube(10, 10),
-          'cone' : new defs.Cone_Tip(10, 10)
+          'cylinder' : new defs.Rounded_Capped_Cylinder(50, 32, [[0, 10], [0, 5]]),
+          'cone' : new defs.Rounded_Closed_Cone(20, 4, [[0, 10], [0, 5]])
         };
 
         this.curve_fn = null;
@@ -125,6 +125,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
         this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
+        this.materials.carnival_stand_bottom = {shader: tex_phong, ambient: 1, texture: new Texture("assets/red_white_stripes.jpg")}
         //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
         this.materials.flesh   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  0, color: color( .9,.5,.9,1 ) }
@@ -221,6 +222,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         //fireworks init
         this.fireworks_animation = false;
         //this.fireworks = new FireworksDisplay(10, 10, 10, 2);
+
+        // carnival init
+        this.carnival_stand = new CarnivalStand();
 
         // animatronic
         this.spline = new Spline();
@@ -366,6 +370,9 @@ export class Bumper_cars extends Bumper_cars_base
     // TODO: you should draw spline here.
     //Rollercoaster
     this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
+
+    let carnival_stand_transform = Mat4.identity();
+    this.carnival_stand.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials);
 
     // draw particle system
     //this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
@@ -546,7 +553,7 @@ export class Bumper_cars extends Bumper_cars_base
 
   start_fireworks() {
     this.fireworks_animation = true;
-    this.fireworks = new FireworksDisplay(20, 100, 30, 2);
+    this.fireworks = new FireworksDisplay(20, 100, 20, 3);
   }
 
   parse_commands() {
