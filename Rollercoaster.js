@@ -88,7 +88,7 @@ export class Rollercoaster{
         this.spline_left = new Spline();
         this.spline_right = new Spline();
         this.main_ride_sample_size = 500;
-        this.climb_sample_size = 1000;
+        this.stage = 0;
         this.curve = null;
         this.curve_left = null;
         this.curve_right = null;
@@ -304,17 +304,150 @@ export class Rollercoaster{
         }
     }
 
-    draw_coaster(caller, uniforms, materials){
+    draw_stands(caller, uniforms, materials, shapes){
+        let points_left = [vec3(15.0, 2.0, -24.5), vec3(14.0, 3.0, -24.5), vec3(13.0, 4.0, -24.5), vec3(12.0, 5.0, -24.5),
+            vec3(11.0, 6.0, -24.5), vec3(10.0, 7.0, -24.5), vec3(9.0, 8.0, -24.5), vec3(8.0, 9.0, -24.5), vec3(7.0, 10.0, -24.5),
+            vec3(6.0, 11.0, -24.5), vec3(5.0, 12.0, -24.5), vec3(4.0, 13.0, -24.5), vec3(3.0, 14.0, -24.5), vec3(2.0, 15.0, -24.5),
+            vec3(1.0, 16.0, -24.5), vec3(0.0, 16.6, -25.5), vec3(-0.5,15.5, -24.5), vec3(-1.5, 13.5, -24.5), vec3(-2.5, 11.5, -24.5), vec3(-3.5, 9.5, -24.5),
+            vec3(-4.5, 7.5, -24.5), vec3(-5.5, 5.5, -24.5), vec3(-6.5, 3.5, -24.5), vec3(-7.0, 2.5, -24.5), vec3(-7.0, 2.0, -34.5),
+            vec3(0.0, 2.0, -34.5), vec3(0.0, 2.0, -40.5), vec3(5.0, 2.0, -40.5), vec3(10.0, 2.0, -40.5), vec3(15.0, 2.0, -40.5)];
 
-        let spline_position = this.spline.get_position(0);
-        if(this.spline_t <= 1.0){
-            spline_position = this.spline.get_position(this.spline_t);
-            this.spline_t += 1/this.main_ride_sample_size;
+        for (let i = 0; i < 30; i++){
+            const p1 = points_left[i];
+            const p2 = vec3(points_left[i][0], 0.0, points_left[i][2]);
+            const len = (p2.minus(p1)).norm();
+            const center = (p1.plus(p2)).times(0.5);
+            let model_transform = Mat4.scale(0.05, len/2, 0.05);
+            const p = p1.minus(p2).normalized();
+            let v = vec3(0, 1, 0);
+            if(Math.abs(v.cross(p).norm()) < 0.1){
+                v = vec3(0, 0, 1);
+                model_transform = Mat4.scale(0.05, 0.05, len/2);
+            }
+            const w = v.cross(p).normalized();
+            const theta = Math.acos(v.dot(p));
+            model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
+            model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
+            shapes.box.draw(caller, uniforms, model_transform, { ...materials.metal, color:color(1, 0, 0, 1)})
+        }
+
+        points_left = [vec3(7.0, 10.0, -36.5), vec3(-7.0, 10.0, -40.5)];
+        let points_right = [vec3(15.0, 0.0, -36.5), vec3(-15.0, 0.0, -40.5)];
+
+        for (let i = 0; i < 2; i++){
+            const p1 = points_left[i];
+            const p2 = points_right[i];
+            const len = (p2.minus(p1)).norm();
+            const center = (p1.plus(p2)).times(0.5);
+            let model_transform = Mat4.scale(0.05, len/2, 0.05);
+            const p = p1.minus(p2).normalized();
+            let v = vec3(0, 1, 0);
+            if(Math.abs(v.cross(p).norm()) < 0.1){
+                v = vec3(0, 0, 1);
+                model_transform = Mat4.scale(0.05, 0.05, len/2);
+            }
+            const w = v.cross(p).normalized();
+            const theta = Math.acos(v.dot(p));
+            model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
+            model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
+            shapes.box.draw(caller, uniforms, model_transform, { ...materials.metal, color:color(1, 0, 0, 1)})
+        }
+
+        //Right side
+        points_left = [vec3(15.0, 2.0, -25.5), vec3(14.0, 3.0, -25.5), vec3(13.0, 4.0, -25.5), vec3(12.0, 5.0, -25.5),
+            vec3(11.0, 6.0, -25.5), vec3(10.0, 7.0, -25.5), vec3(9.0, 8.0, -25.5), vec3(8.0, 9.0, -25.5), vec3(7.0, 10.0, -25.5),
+            vec3(6.0, 11.0, -25.5), vec3(5.0, 12.0, -25.5), vec3(4.0, 13.0, -25.5), vec3(3.0, 14.0, -25.5), vec3(2.0, 15.0, -25.5),
+            vec3(1.0, 16.0, -25.5), vec3(0.0, 16.6, -25.5), vec3(-0.5,15.5, -25.5), vec3(-1.5, 13.5, -25.5), vec3(-2.5, 11.5, -25.5), vec3(-3.5, 9.5, -25.5),
+            vec3(-4.5, 7.5, -25.5), vec3(-5.5, 5.5, -25.5), vec3(-6.5, 3.5, -25.5), vec3(-7.0, 2.5, -25.5), vec3(-7.0, 2.0, -35.5),
+            vec3(0.0, 2.0, -35.5), vec3(0.0, 2.0, -41.5), vec3(5.0, 2.0, -41.5), vec3(10.0, 2.0, -41.5), vec3(15.0, 2.0, -41.5)];
+
+        for (let i = 0; i < 30; i++){
+            const p1 = points_left[i];
+            const p2 = vec3(points_left[i][0], 0.0, points_left[i][2]);
+            const len = (p2.minus(p1)).norm();
+            const center = (p1.plus(p2)).times(0.5);
+            let model_transform = Mat4.scale(0.05, len/2, 0.05);
+            const p = p1.minus(p2).normalized();
+            let v = vec3(0, 1, 0);
+            if(Math.abs(v.cross(p).norm()) < 0.1){
+                v = vec3(0, 0, 1);
+                model_transform = Mat4.scale(0.05, 0.05, len/2);
+            }
+            const w = v.cross(p).normalized();
+            const theta = Math.acos(v.dot(p));
+            model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
+            model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
+            shapes.box.draw(caller, uniforms, model_transform, { ...materials.metal, color:color(1, 0, 0, 1)})
+        }
+
+        points_left = [vec3(7.0, 10.0, -37.5), vec3(-7.0, 10.0, -41.5)];
+        points_right = [vec3(15.0, 0.0, -37.5), vec3(-15.0, 0.0, -41.5)];
+
+        for (let i = 0; i < 2; i++){
+            const p1 = points_left[i];
+            const p2 = points_right[i];
+            const len = (p2.minus(p1)).norm();
+            const center = (p1.plus(p2)).times(0.5);
+            let model_transform = Mat4.scale(0.05, len/2, 0.05);
+            const p = p1.minus(p2).normalized();
+            let v = vec3(0, 1, 0);
+            if(Math.abs(v.cross(p).norm()) < 0.1){
+                v = vec3(0, 0, 1);
+                model_transform = Mat4.scale(0.05, 0.05, len/2);
+            }
+            const w = v.cross(p).normalized();
+            const theta = Math.acos(v.dot(p));
+            model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
+            model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
+            shapes.box.draw(caller, uniforms, model_transform, { ...materials.metal, color:color(1, 0, 0, 1)})
+        }
+    }
+
+    draw_coaster(caller, uniforms, materials){
+        if(this.stage === 0){
+            this.main_ride_sample_size = 800;
+        }
+        if(this.stage === 1){
+            this.main_ride_sample_size -= 1;
+        }
+
+        if(this.stage === 3){
+            this.main_ride_sample_size += 50;
+        }
+        let spline_position = this.spline.get_position(this.spline_t);
+        this.spline_t += 1/this.main_ride_sample_size;
+
+        console.log("Spline position: ", spline_position);
+        if(spline_position[1] > 16.0 && spline_position[0] <= 0.0 && this.stage === 0){
+            this.main_ride_sample_size = 200;
+            this.stage = 1;
+        }
+
+        if(spline_position[0] < -6.8 && spline_position[1] < 2.7 && this.stage === 1){
+            this.main_ride_sample_size = 500;
+            this.stage = 2;
+        }
+
+        if(spline_position[0] > 5.0 && spline_position[1] === 2.0 && spline_position[2] === -41.0 && this.stage === 2){
+            this.main_ride_sample_size += 50;
+            this.stage = 3;
+        }
+
+        if(spline_position[0] === 15.0 && spline_position[1] === 2.0 && spline_position[2] > -26.0 && this.stage === 3){
+            this.main_ride_sample_size = 800;
+            this.stage = 0;
         }
 
         if(this.spline_t > 1.0){
             this.spline_t = 0;
         }
+
+
+        // this.spline.add_point(5.0, 2.0, -41.0, 30.0, 0.0, 0.0);
+        // this.spline.add_point(10.0, 2.0, -41.0, 30.0, 0.0, 0.0);
+        // this.spline.add_point(15.0, 2.0, -41.0, 100.0, 0.0, 200.0);
+        // this.spline.add_point(15.0, 2.0, -25.0, -500.0, 200.0, 0.0);
+
         // let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 5),2));
         let model_transform = Mat4.identity().pre_multiply(Mat4.translation(spline_position[0], spline_position[1], spline_position[2]));
         model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
@@ -325,5 +458,6 @@ export class Rollercoaster{
     draw(caller, uniforms, materials, shapes){
         this.draw_track(caller, uniforms, materials, shapes);
         this.draw_coaster(caller, uniforms, materials);
+        this.draw_stands(caller, uniforms, materials, shapes);
     }
 };
