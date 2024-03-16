@@ -188,7 +188,8 @@ export class Rollercoaster{
         this.spline.add_point(-5.5, 5.5, -25.0, -20.0, -20.0, 0.0);
         this.spline.add_point(-6.0, 4.5, -25.0, -20.0, -20.0, 0.0);
         this.spline.add_point(-6.5, 3.5, -25.0, -20, -20.0, 0.0);
-        this.spline.add_point(-7.0, 2.5, -25.0, -100.0, -100.0, -500.0);
+        this.spline.add_point(-7.0, 2.5, -25.0, -20, -20.0, 0.0);
+        this.spline.add_point(-8.0, 2.0, -25.0, -100.0, -100.0, -500.0);
         this.spline.add_point(-7.0, 2.0, -35.0, 500, 0.0, 0.0);
         this.spline.add_point(0.0, 2.0, -35.0, 500.0, 0.0, 0.0);
         this.spline.add_point(7.0, 10.0, -37.0, 0.0, 700.0, 0.0);
@@ -244,7 +245,8 @@ export class Rollercoaster{
         this.spline_left.add_point(-5.5, 5.5, -24.5, -20.0, -20.0, 0.0);
         this.spline_left.add_point(-6.0, 4.5, -24.5, -20.0, -20.0, 0.0);
         this.spline_left.add_point(-6.5, 3.5, -24.5, -20, -20.0, 0.0);
-        this.spline_left.add_point(-7.0, 2.5, -24.5, -100.0, -100.0, -500.0);
+        this.spline_left.add_point(-7.0, 2.5, -24.5, -20, -20.0, 0.0);
+        this.spline_left.add_point(-8.0, 2.0, -24.5, -100.0, -100.0, -500.0);
         this.spline_left.add_point(-7.0, 2.0, -34.5, 500, 0.0, 0.0);
         this.spline_left.add_point(0.0, 2.0, -34.5, 500.0, 0.0, 0.0);
         this.spline_left.add_point(7.0, 10.0, -36.5, 0.0, 700.0, 0.0);
@@ -300,7 +302,8 @@ export class Rollercoaster{
         this.spline_right.add_point(-5.5, 5.5, -25.5, -20.0, -20.0, 0.0);
         this.spline_right.add_point(-6.0, 4.5, -25.5, -20.0, -20.0, 0.0);
         this.spline_right.add_point(-6.5, 3.5, -25.5, -20, -20.0, 0.0);
-        this.spline_right.add_point(-7.0, 2.5, -25.5, -100.0, -100.0, -500.0);
+        this.spline_right.add_point(-7.0, 2.5, -25.5, -20, -20.0, 0.0);
+        this.spline_right.add_point(-8.0, 2.0, -25.5, -100.0, -100.0, -500.0);
         this.spline_right.add_point(-7.0, 2.0, -35.5, 500, 0.0, 0.0);
         this.spline_right.add_point(0.0, 2.0, -35.5, 500.0, 0.0, 0.0);
         this.spline_right.add_point(7.0, 10.0, -37.5, 0.0, 700.0, 0.0);
@@ -353,7 +356,7 @@ export class Rollercoaster{
             vec3(11.0, 6.0, -24.5), vec3(10.0, 7.0, -24.5), vec3(9.0, 8.0, -24.5), vec3(8.0, 9.0, -24.5), vec3(7.0, 10.0, -24.5),
             vec3(6.0, 11.0, -24.5), vec3(5.0, 12.0, -24.5), vec3(4.0, 13.0, -24.5), vec3(3.0, 14.0, -24.5), vec3(2.0, 15.0, -24.5),
             vec3(1.0, 16.0, -24.5), vec3(0.0, 16.6, -25.5), vec3(-0.5,15.5, -24.5), vec3(-1.5, 13.5, -24.5), vec3(-2.5, 11.5, -24.5), vec3(-3.5, 9.5, -24.5),
-            vec3(-4.5, 7.5, -24.5), vec3(-5.5, 5.5, -24.5), vec3(-6.5, 3.5, -24.5), vec3(-7.0, 2.5, -24.5), vec3(-7.0, 2.0, -34.5),
+            vec3(-4.5, 7.5, -24.5), vec3(-5.5, 5.5, -24.5), vec3(-6.5, 3.5, -24.5), vec3(-7.0, 2.5, -24.5), vec3(-8.0, 2.0, -24.5), vec3(-7.0, 2.0, -34.5),
             vec3(0.0, 2.0, -34.5), vec3(0.0, 2.0, -40.5), vec3(5.0, 2.0, -40.5), vec3(10.0, 2.0, -40.5), vec3(15.0, 2.0, -40.5)];
 
         for (let i = 0; i < 30; i++){
@@ -402,7 +405,7 @@ export class Rollercoaster{
             vec3(11.0, 6.0, -25.5), vec3(10.0, 7.0, -25.5), vec3(9.0, 8.0, -25.5), vec3(8.0, 9.0, -25.5), vec3(7.0, 10.0, -25.5),
             vec3(6.0, 11.0, -25.5), vec3(5.0, 12.0, -25.5), vec3(4.0, 13.0, -25.5), vec3(3.0, 14.0, -25.5), vec3(2.0, 15.0, -25.5),
             vec3(1.0, 16.0, -25.5), vec3(0.0, 16.6, -25.5), vec3(-0.5,15.5, -25.5), vec3(-1.5, 13.5, -25.5), vec3(-2.5, 11.5, -25.5), vec3(-3.5, 9.5, -25.5),
-            vec3(-4.5, 7.5, -25.5), vec3(-5.5, 5.5, -25.5), vec3(-6.5, 3.5, -25.5), vec3(-7.0, 2.5, -25.5), vec3(-7.0, 2.0, -35.5),
+            vec3(-4.5, 7.5, -25.5), vec3(-5.5, 5.5, -25.5), vec3(-6.5, 3.5, -25.5), vec3(-7.0, 2.5, -25.5), vec3(-8.0, 2.0, -25.5), vec3(-7.0, 2.0, -35.5),
             vec3(0.0, 2.0, -35.5), vec3(0.0, 2.0, -41.5), vec3(5.0, 2.0, -41.5), vec3(10.0, 2.0, -41.5), vec3(15.0, 2.0, -41.5)];
 
         for (let i = 0; i < 30; i++){
@@ -449,7 +452,7 @@ export class Rollercoaster{
 
     draw_coaster(caller, uniforms, materials){
         if(this.stage === 0){
-            this.main_ride_sample_size = 800;
+            this.main_ride_sample_size = 700;
         }
         if(this.stage === 1){
             this.main_ride_sample_size -= 1;
@@ -459,7 +462,6 @@ export class Rollercoaster{
             this.main_ride_sample_size += 50;
         }
         let spline_position = this.spline.get_position(this.spline_t);
-        this.spline_t += 1/this.main_ride_sample_size;
 
         if(spline_position[1] > 16.0 && spline_position[0] <= 0.0 && this.stage === 0){
             this.main_ride_sample_size = 200;
@@ -480,61 +482,67 @@ export class Rollercoaster{
             this.main_ride_sample_size = 700;
             this.stage = 0;
         }
-
         // let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 5),2));
-        let model_transform = Mat4.identity().pre_multiply(Mat4.translation(spline_position[0], spline_position[1], spline_position[2]));
-        model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
-        model_transform = model_transform.times(Mat4.translation(0, 1, 0));
-        //model_transform = this.car_transform(model_transform, this.spline_t);
+        // let model_transform = Mat4.identity().pre_multiply(Mat4.translation(spline_position[0], spline_position[1], spline_position[2]));
+        // model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
+        // model_transform = model_transform.times(Mat4.translation(0, 1, 0));
+        let model_transform = this.car_transform(this.spline_t);
+        // let model_transform = Mat4.identity().pre_multiply(Mat4.translation(spline_position[0], spline_position[1], spline_position[2]));
+        // model_transform = this.car_transform(this.spline_t).times(model_transform);
+        // model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
         this.car.draw( caller, uniforms, model_transform, { ...materials.plastic, color: color(0, 0, 1, 1)} );
+        this.spline_t += 1/this.main_ride_sample_size;
         if(this.spline_t > 1.0){
             this.spline_t = 0;
         }
     }
 
-    car_transform(model_transform, t){
-        let tangent = this.spline.get_tangent(t);
-        let curvature = this.spline.get_curvature(t);
-        let v = tangent.cross(curvature);
-        v.normalize();
+    car_transform(time){
+        // let t = this.spline.get_tangent(time);
+        // let c = this.spline.get_curvature(time);
+        // if(t[0] !== 0 && t[1] !== 0 && t[2] !== 0){
+        //     t = t.normalized();
+        // }
+        //
+        // if(c[0] !== 0 && c[1] !== 0 && c[2] !== 0){
+        //     c = c.normalized();
+        // }
+        // let v = t.cross(c);
+        // if(v[0] !== 0 && v[1] !== 0 && v[2] !== 0){
+        //     v = v.normalized();
+        // }
+        //
+        // let mat = Mat4.identity();
+        // mat[0] = [t[0], c[0], v[0], 0.0];
+        // mat[1] = [t[1], c[1], v[1], 0.0];
+        // mat[2] = [t[2], c[2], v[2], 0.0];
+        //
+        // return mat;
 
-        //Coverting to rotation matrix
-        let cosY = Math.cos(v[1]);     // Yaw
-        let sinY = Math.sin(v[1]);
-
-        let cosP = Math.cos(v[0]);     // Pitch
-        let sinP = Math.sin(v[0]);
-
-        let cosR = Math.cos(v[2]);     // Roll
-        let sinR = Math.sin(v[2]);
-
-        let mat = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-        mat[0][0] = cosY * cosR + sinY * sinP * sinR;
-        mat[1][0] = cosR * sinY * sinP - sinR * cosY;
-        mat[2][0] = cosP * sinY;
-
-        mat[0][1] = cosP * sinR;
-        mat[1][1] = cosR * cosP;
-        mat[2][1] = -sinP;
-
-        mat[0][2] = sinR * cosY * sinP - sinY * cosR;
-        mat[1][2] = sinY * sinR + cosR * cosY * sinP;
-        mat[2][2] = cosP * cosY;
-
-        let transformed = Mat4.identity();
-        transformed[0][0] = model_transform[0][0]*mat[0][0] + model_transform[0][1]*mat[1][0] + model_transform[0][2]*mat[2][0];
-        transformed[0][1] = model_transform[0][0]*mat[0][1] + model_transform[0][1]*mat[1][1] + model_transform[0][2]*mat[2][1];
-        transformed[0][2] = model_transform[0][0]*mat[0][2] + model_transform[0][2]*mat[1][2] + model_transform[0][2]*mat[2][2];
-
-        transformed[1][0] = model_transform[1][0]*mat[0][0] + model_transform[1][1]*mat[1][0] + model_transform[1][2]*mat[2][0];
-        transformed[1][1] = model_transform[1][0]*mat[0][1] + model_transform[1][1]*mat[1][1] + model_transform[1][2]*mat[2][1];
-        transformed[1][2] = model_transform[1][0]*mat[0][2] + model_transform[1][2]*mat[1][2] + model_transform[1][2]*mat[2][2];
-
-        transformed[2][0] = model_transform[2][0]*mat[0][0] + model_transform[2][1]*mat[1][0] + model_transform[2][2]*mat[2][0];
-        transformed[2][1] = model_transform[2][0]*mat[0][1] + model_transform[2][1]*mat[1][1] + model_transform[2][2]*mat[2][1];
-        transformed[2][2] = model_transform[2][0]*mat[0][2] + model_transform[2][2]*mat[1][2] + model_transform[2][2]*mat[2][2];
-
-        return transformed;
+        const p1 = this.spline.get_position(time);
+        if(time+0.01 > 1.0){
+            time = 0.0;
+        }
+        else{
+            time += 0.01;
+        }
+        const p2 = this.spline.get_position(time);
+        const len = (p2.minus(p1)).norm();
+        const center = ((p1.plus(p2)).times(0.5)).plus(vec3(0, 0.5, 0));
+        let model_transform = Mat4.scale(0.5, 0.5, 0.5);
+        const p = p1.minus(p2).normalized();
+        let v = vec3(0, 1, 0);
+        if(Math.abs(v.cross(p).norm()) < 0.1){
+            v = vec3(0, 0, 1);
+            model_transform = Mat4.scale(0.5, 0.5, 0.5);
+        }
+        const w = v.cross(p).normalized();
+        const theta = Math.acos(v.dot(p));
+        model_transform.pre_multiply(Mat4.rotation(theta, w[0], w[1], w[2]));
+        model_transform.pre_multiply(Mat4.translation(center[0], center[1], center[2]));
+        model_transform = model_transform.times(Mat4.rotation(Math.PI/2, 0, 0, 1));
+        model_transform = model_transform.times(Mat4.rotation(3*Math.PI/2, 0, 1, 0));
+        return model_transform;
     }
 
     draw(caller, uniforms, materials, shapes){
