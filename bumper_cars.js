@@ -1,5 +1,6 @@
 import {tiny, defs} from './examples/common.js';
 import { Shape_From_File } from './examples/obj-file-demo.js';
+import { Articulated_Human } from './human.js';
 
 // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } = tiny;
@@ -101,7 +102,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'ball' : new defs.Subdivision_Sphere( 4 ),
           'axis' : new defs.Axis_Arrows(),
           'sky': new defs.Subdivision_Sphere(4),
-          'fence' : new Shape_From_File("./assets/fence/fence.obj")
+          'fence' : new Shape_From_File("./assets/fence/fence.obj"),
+          'human': new Articulated_Human(),
         };
 
         this.curve_fn = null;
@@ -123,6 +125,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
         //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
+        this.materials.flesh   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  0, color: color( .9,.5,.9,1 ) }
         //this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_cartoon.png")}
         this.ball_location = vec3(1, 1, 1);
         this.ball_radius = 0.25;
@@ -217,6 +220,28 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.fireworks_animation = false;
         //this.fireworks = new FireworksDisplay(10, 10, 10, 2);
 
+        // animatronic
+        this.spline = new Spline(); 
+        this.spline.add_point(-8, 25.0, 62.15, 2, 0.0, 0.0);
+        this.spline.add_point(-6, 15.0, 62.15, -2, 0.0, 0.0);
+        this.spline.add_point(-8, 25.0, 62.15, -2, 0.0, 0.0);
+
+        // comment
+        this.spline2 = new Spline();
+        this.spline2.add_point(5, 25.0, 62.15, -2, 0.0, 0.0);
+        this.spline2.add_point(5, 15.0, 62.15, 2, 0.0, 0.0);
+        this.spline2.add_point(5, 25.0, 62.15, 4, 0.0, 0.0);
+        
+        const curve_fn = (t) => this.spline.get_position(t);
+        const curve_fn2 = (t) => this.spline2.get_position(t);
+        this.sample_cnt = 1000;
+        this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
+        this.curve2 = new Curve_Shape(curve_fn2, this.sample_cnt2);
+
+        this.human = new Articulated_Human;
+        this.right_target_pos = vec3(-4.5, 12.0, 32.15);
+        this.left_target_pos = vec3(2.5, 12.0, 32.15);
+        this.left_target_pos = vec3(2.5, 4.0, 32.15);
       }
 
       render_animation( caller )
@@ -244,7 +269,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // *** Lights: *** Values of vector or point lights.  They'll be consulted by
         // the shader when coloring shapes.  See Light's class definition for inputs.
-        const t = this.t = this.uniforms.animation_time/1000;
+        let t = this.t = this.uniforms.animation_time/1000;
         //const angle = Math.sin( t );
         const angle = Math.sin( 0 );
 
@@ -310,9 +335,9 @@ export class Bumper_cars extends Bumper_cars_base
         // translation(), scale(), and rotation() to generate matrices, and the
         // function times(), which generates products of matrices.
 
-    const blue = color( 0,0,1,1 ), yellow = color( 1,0.7,0,1 ), red = color( 1,0,1.0,1.0, 1);
+    const blue = color( 0,0,1,1 ), yellow = color( 1,0.7,0,1 ), red = color( 1,0,1.0,1.0, 1), flesh = color(1, 0.79, 0.64, 1);
 
-    const t = this.t = this.uniforms.animation_time/1000;
+    let t = this.t = this.uniforms.animation_time/1000;
 
     // !!! Draw ball (for reference)
     let ball_transform = Mat4.translation(this.ball_location[0], this.ball_location[1], this.ball_location[2])
@@ -411,7 +436,7 @@ export class Bumper_cars extends Bumper_cars_base
       this.car1.vx -= 3 * translational_friction;
       this.car2.vx += 3 * translational_friction;
     }
-    console.log("Collision?: " + this.car1.has_collided(this.car2));
+    // console.log("Collision?: " + this.car1.has_collided(this.car2));
 
     //draw tree
     this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
@@ -423,9 +448,72 @@ export class Bumper_cars extends Bumper_cars_base
       lastTimestamp = currentTime;
       this.fireworks.update(dt);
       this.fireworks.draw(caller, this.uniforms, this.shapes, this.materials);
-
     }
 
+    // animatronic
+    let lu_leg_transform = Mat4.scale(0.4, 1.6, .6);
+    lu_leg_transform.pre_multiply(Mat4.translation(-4.2, 5, 35));
+    this.shapes.ball.draw(caller, this.uniforms, lu_leg_transform, { ...this.materials.flesh, color : flesh});
+    let ll_leg_transform = Mat4.scale(0.4, 2, .2);
+    ll_leg_transform.pre_multiply(Mat4.translation(-4.2, 1.8, 35));
+    this.shapes.ball.draw(caller, this.uniforms, ll_leg_transform, { ...this.materials.flesh, color : flesh});
+    let ru_leg_transform = Mat4.scale(0.4, 1.6, .6);
+    ru_leg_transform.pre_multiply(Mat4.translation(-1.8, 5, 35));
+    this.shapes.ball.draw(caller, this.uniforms, ru_leg_transform, { ...this.materials.flesh, color : flesh});
+    let rl_leg_transform = Mat4.scale(0.4, 2, .2);
+    rl_leg_transform.pre_multiply(Mat4.translation(-1.8, 1.8, 35));
+    this.shapes.ball.draw(caller, this.uniforms, rl_leg_transform, { ...this.materials.flesh, color : flesh});
+    let l_foot_transform = Mat4.scale(1, 1, 1);
+    l_foot_transform.pre_multiply(Mat4.translation(-4.2, 0.6, 34.65));
+    this.shapes.ball.draw(caller, this.uniforms, l_foot_transform, { ...this.materials.flesh, color : flesh});
+    let r_foot_transform = Mat4.scale(1, 1, 1);
+    r_foot_transform.pre_multiply(Mat4.translation(-1.8, 0.6, 34.65));
+    this.shapes.ball.draw(caller, this.uniforms, r_foot_transform, { ...this.materials.flesh, color : flesh});
+    this.human.draw(caller, this.uniforms, { ...this.materials.flesh, color : flesh});
+
+    const dt_adjusted = Math.min(1 / 30, this.uniforms.animation_delta_time / 1000);
+    const t_n = t + dt_adjusted;
+    this.right_target_pos = Array.from(this.spline.get_position(this.t - Math.floor(this.t)));
+    this.left_target_pos = Array.from(this.spline2.get_position(this.t - Math.floor(this.t)));
+    for (; t <= t_n; t += 20 ){
+      const k = 0.029;
+      let right_curr_pos = Array.from(this.human.get_right_end_effector_position());
+      let left_curr_pos = Array.from(this.human.get_left_end_effector_position())
+
+      let right_E = math.subtract(this.right_target_pos, right_curr_pos);
+      let left_E = math.subtract(this.left_target_pos, left_curr_pos);
+
+
+      let right_error_dist = Math.sqrt(right_E[0] ** 2 + right_E[1] ** 2 + right_E[2] ** 2);
+      let left_error_dist = Math.sqrt(left_E[0] ** 2 + left_E[1] ** 2 + left_E[2] ** 2);
+
+      if (right_error_dist >= k){
+        let dx = math.multiply(10, math.multiply(k, right_E));
+        let right_J = this.human.calculate_right_Jacobian();
+        let Jinv = this.human.calculate_inverse_Jacobian(right_J);
+        let dtheta = math.multiply(math.transpose(dx), Jinv);
+        this.human.right_theta = math.add(this.human.right_theta, dtheta);
+        let sum = new Array(3);
+        for (let i = 0; i < 3; i++){
+          sum[i] = this.human.right_theta[i] + dtheta[i];
+        }
+      }
+      
+      const k2 = 0.01;
+      if (left_error_dist >= k2){
+        let dx = math.multiply(7, math.multiply(k2, left_E));
+        let left_J = this.human.calculate_left_Jacobian();
+        let Jinv = this.human.calculate_inverse_Jacobian(left_J);
+        let dtheta = math.multiply(math.transpose(dx), Jinv);
+        this.human.left_theta = math.add(this.human.left_theta, dtheta);
+        let sum = new Array(3);
+        for (let i = 0; i < 3; i++){
+          sum[i] = this.human.left_theta[i] + dtheta[i];
+        }
+      }
+
+    }
+    this.initial_set = true;
   }
 
   render_controls()
