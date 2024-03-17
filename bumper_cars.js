@@ -280,7 +280,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           // perspective() are field of view, aspect ratio, and distances to the near plane and far plane.
 
           // !!! Camera changed here
-          Shader.assign_camera( Mat4.look_at (vec3 (-35, 25, -20), vec3 (15, 15, 0), vec3 (0, 1, 0)), this.uniforms );
+          this.initial_camera_location = Mat4.look_at(vec3 (-10, 30, 35), vec3 (0, 20, 10), vec3 (0, 1, 0));
+          Shader.assign_camera( this.initial_camera_location, this.uniforms );
         }
         this.uniforms.projection_transform = Mat4.perspective( Math.PI/4, caller.width/caller.height, 1, 100 );
 
@@ -604,7 +605,20 @@ export class Bumper_cars extends Bumper_cars_base
     this.key_triggered_button("Reset Bumper Cars", ["Shift", "R"], this.reset_cars);
     this.new_line();
     this.key_triggered_button("Fireworks", ["f"], this.start_fireworks.bind(this));
+    this.new_line();
+    this.key_triggered_button("Ride Rollercoaster", ["R"], this.ride_coaster());
+    this.new_line();
+    this.key_triggered_button("View Main Scene", ["V"], this.view_main_scene());
   }
+
+  ride_coaster(){
+
+  }
+
+  view_main_scene(){
+    //Shader.assign_camera( Mat4.look_at (vec3 (25, 25, -20), vec3 (0, 10, 0), vec3 (0, 1, 0)), this.uniforms );
+  }
+
 
   reset_cars(){
     this.starting_rot_ang = 1/50;
