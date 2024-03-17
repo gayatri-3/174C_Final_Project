@@ -481,10 +481,10 @@ export class FireworksDisplay {
 
     createFirework() {
         const randomColor = color(Math.random(), Math.random(), Math.random(), 1.0);
-        const startingVector = vec3(-30,0,-40);
+        const startingVector = vec3(-30,0,-30);
         const fireworks = new Firework(
             vec3((Math.random() * this.canvasWidth) + startingVector[0], (Math.random() * this.canvasHeight) + startingVector[1],startingVector[2]),
-            vec3(0, 15 + Math.random() * 10, 0), // Initial velocity (upward)
+            vec3(0, 10 + Math.random() * 10, 0), // Initial velocity (upward)
             randomColor,
             this.maxBursts // Pass maxBursts to Firework constructor
         );
@@ -494,103 +494,122 @@ export class FireworksDisplay {
     update(dt) {
         const gravity = vec3(0, -9.81, 0);
 
-        for (const firework of this.fireworks) {
-            firework.previousPosition = firework.position.copy(); // Store previous position
-            firework.previousVelocity = firework.velocity.copy(); // Store previous velocity
+        for (let i = 0; i < this.fireworks.length; i++) {
+            //const firework = this.fireworks[i];
+            this.fireworks[i].previousPosition = this.fireworks[i].position.copy(); // Store previous position
+            this.fireworks[i].previousVelocity = this.fireworks[i].velocity.copy(); // Store previous velocity
 
             // Update velocity and position
-            firework.velocity = firework.velocity.plus(gravity.times(dt));
-            firework.position = firework.position.plus(firework.velocity.times(dt));
+            this.fireworks[i].velocity = this.fireworks[i].velocity.plus(gravity.times(dt));
+            this.fireworks[i].position = this.fireworks[i].position.plus(this.fireworks[i].velocity.times(dt));
 
             // Check for burst
-            if (firework.velocity[1] < 0 && firework.previousVelocity[1] > 0 && firework.remainingBursts > 0) {
-                this.triggerBurst(firework);
-                firework.remainingBursts--; // Decrement remaining bursts
+            if (this.fireworks[i].remainingBursts > 0 && this.fireworks[i].velocity[1] < 0 && this.fireworks[i].previousVelocity[1] > 0) {
+                this.triggerBurst(this.fireworks[i]);
+                console.log(this.fireworks[i].remainingBursts);
+                this.fireworks[i].remainingBursts--; // Decrement remaining bursts
             }
         }
+
     }
 
     triggerBurst(firework) {
-        const numBranches = 5; // Number of branches
-        const branchAngle = (2 * Math.PI) / numBranches; // Angle between branches
+        if (firework.remainingBursts > 0) {
+            const numBranches = 5; // Number of branches
+            const branchAngle = (2 * Math.PI) / numBranches; // Angle between branches
 
-        // Create particles in a burst pattern
-        for (let i = 0; i < numBranches; i++) {
-            const angle = i * branchAngle;
-            const branchVelocity = vec3(Math.cos(angle), Math.sin(angle), 0).times(5); // Branch velocity
+            // Create particles in a burst pattern
+            for (let i = 0; i < numBranches; i++) {
+                const angle = i * branchAngle;
+                const branchVelocity = vec3(Math.cos(angle), Math.sin(angle), 0).times(5); // Branch velocity
 
-            // Create branch particles
-            const branchParticle1 = new Firework(
-                firework.position.copy(), // Position same as parent firework
-                branchVelocity, // Branch velocity
-                firework.color, // Same color as parent firework
-                0 // No further bursts allowed for branch particles
-            );
+                // Create branch particles
+                const branchParticle1 = new Firework(
+                    firework.position.copy(), // Position same as parent firework
+                    branchVelocity, // Branch velocity
+                    firework.color, // Same color as parent firework
+                    0 // No further bursts allowed for branch particles
+                );
 
-            const branchParticle2 = new Firework(
-                firework.position.copy(), // Position same as parent firework
-                branchVelocity.times(-1), // Branch velocity in opposite direction
-                firework.color, // Same color as parent firework
-                0 // No further bursts allowed for branch particles
-            );
+                const branchParticle2 = new Firework(
+                    firework.position.copy(), // Position same as parent firework
+                    branchVelocity.times(-1), // Branch velocity in opposite direction
+                    firework.color, // Same color as parent firework
+                    0 // No further bursts allowed for branch particles
+                );
 
-            // Add branch particles to fireworks array
-            this.fireworks.push(branchParticle1);
-            this.fireworks.push(branchParticle2);
+                // Add branch particles to fireworks array
+                this.fireworks.push(branchParticle1);
+                this.fireworks.push(branchParticle2);
+            }
+            firework.remainingBursts--;
         }
     }
 
     draw(webgl_manager, uniform, shapes, materials) {
         for (const fireworks of this.fireworks) {
-            const model_transform = Mat4.translation(...fireworks.position);
+            const model_transform = Mat4.translation(...fireworks.position).times(Mat4.scale(0.5,0.5,0.5));
             shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: fireworks.color});
         }
     }
 }
-/*
+
 export class CarnivalStand {
     constructor() {
         // Material properties
         //this.material = { ambient: 0.4, diffusivity: 0.6, color: color(0, 0, 1, 1) };
         this.blue = color(0,0,1,1);
+        this.red = color(0,1,1,1);
     }
 
     draw(webgl_manager, uniform, shapes, model_transform, materials) {
+
         // Draw base (box)
         let base_transform = model_transform.times(Mat4.translation(0, 1, 0)).times(Mat4.scale(3, 2, 3));
-        //shapes.box.draw(webgl_manager, uniform, base_transform, {...materials.plastic, color: this.blue});
+        shapes.box.draw(webgl_manager, uniform, base_transform, {...materials.plastic, color: this.blue});
 
+        let pillar_start_height = 4;
+        let pillar_width = 4;
         // Draw pillars (cylinders)
         let pillar_transform = Mat4.identity()
-            .times(Mat4.translation(-0.4, 0, 0)) // First, apply translation
+            .times(Mat4.translation(pillar_width/2, pillar_start_height, pillar_width/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
             .times(Mat4.scale(0.5, 0.5, 4)) // Then apply scaling
-            .times(Mat4.rotation(Math.PI / 2, vec3(0, 0, 1))); // Finally, rotate by 90 degrees around the z-axis
 
-        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.red});
 
-        pillar_transform = model_transform.times(Mat4.translation(0.4, 0, 0))
-            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
-            .times(Mat4.scale(0.1, 0.1, 1));
-        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+        pillar_transform = Mat4.identity()
+            .times(Mat4.translation(-pillar_width/2, pillar_start_height, -pillar_width/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+            .times(Mat4.scale(0.5, 0.5, 4)) // Then apply scaling
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.red});
 
-        pillar_transform = model_transform.times(Mat4.translation(0, -0.4, 0))
-            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
-            .times(Mat4.scale(0.1, 0.1, 1));
-        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+        pillar_transform = Mat4.identity()
+            .times(Mat4.translation(pillar_width/2, pillar_start_height, -pillar_width/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+            .times(Mat4.scale(0.5, 0.5, 4)) // Then apply scaling
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.red});
 
-        pillar_transform = model_transform.times(Mat4.translation(0, 0.4, 0))
-            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
-            .times(Mat4.scale(0.1, 0.1, 1));
-        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.blue});
+        pillar_transform = Mat4.identity()
+            .times(Mat4.translation(-pillar_width/2, pillar_start_height, pillar_width/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+            .times(Mat4.scale(0.5, 0.5, 4)) // Then apply scaling
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.red});
+
+        base_transform = Mat4.identity().times(Mat4.translation(0, 7, 0)).times(Mat4.scale(3, 1, 3));
+        shapes.box.draw(webgl_manager, uniform, base_transform, {...materials.plastic, color: this.blue});
 
         // Draw top (cone)
-        let cone_transform = model_transform.times(Mat4.translation(0, 0, 1))
-            .times(Mat4.rotation(Math.PI / 2, vec3(1, 0, 0)))
-            .times(Mat4.scale(0.7, 0.7, 0.7));
+        let cone_transform = Mat4.identity()
+            .times(Mat4.translation(0, 9.5, 0))
+            .times(Mat4.rotation(-Math.PI / 2, 1,0,0))
+            .times(Mat4.rotation(-Math.PI / 4, 0,0,1))
+            .times(Mat4.scale(4, 4, 1.5));
         shapes.cone.draw(webgl_manager, uniform, cone_transform, {...materials.plastic, color: this.blue});
+
+
 
 
     }
 }
 
-*/
