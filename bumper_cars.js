@@ -93,6 +93,14 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
         this.hover = this.swarm = false;
+        this.camera_location = Mat4.look_at(vec3 (0, 33, 37), vec3 (0, 25, 10), vec3 (0, 1, 0));
+        this.bumper_cam = false;
+        this.coaster_cam = false;
+        this.fountain_cam = false;
+        this.main_scene_cam = true;
+        this.bear_cam = false;
+        this.ride_coaster_cam = false;
+        this.ferris_cam = false;
         // At the beginning of our program, load one of each of these shape
         // definitions onto the GPU.  NOTE:  Only do this ONCE per shape it
         // would be redundant to tell it again.  You should just re-use the
@@ -139,12 +147,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.ice_cream_booth = {shader: tex_phong, ambient: 1, texture: new Texture("assets/ice_cream.png")}
 
 
-        //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
         this.materials.flesh   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  0, color: color( .9,.5,.9,1 ) }
-        //this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_cartoon.png")}
-        this.ball_location = vec3(1, 1, 1);
-        this.ball_radius = 0.25;
 
         //Fountain
         this.fountain = new Fountain();
@@ -228,8 +232,6 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         this.human = new Articulated_Human;
         this.right_target_pos = vec3(-4.5, 12.0, 32.15);
-        //this.left_target_pos = vec3(2.5, 12.0, 32.15);
-        //this.left_target_pos = vec3(2.5, 4.0, 32.15);
       }
 
       render_animation( caller )
@@ -251,9 +253,40 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           // perspective() are field of view, aspect ratio, and distances to the near plane and far plane.
 
           // !!! Camera changed here
-          this.initial_camera_location = Mat4.look_at(vec3 (0, 33, 37), vec3 (0, 25, 10), vec3 (0, 1, 0));
-          Shader.assign_camera( this.initial_camera_location, this.uniforms );
+          if(this.main_scene_cam){
+            this.camera_location = Mat4.look_at(vec3 (0, 33, 37), vec3 (0, 25, 10), vec3 (0, 1, 0));
+          }
+          Shader.assign_camera( this.camera_location, this.uniforms );
         }
+        console.log(this.bumper_cam);
+        if(this.bumper_cam){
+          this.camera_location = Mat4.look_at(vec3 (20, 15, 15), vec3 (10, 10, 5), vec3 (0, 1, 0));
+        }
+        else if(this.fountain_cam){
+          this.camera_location = Mat4.look_at(vec3 (-12, 5, 0), vec3 (-30, 10, -30), vec3 (0, 1, 0));
+        }
+        else if(this.coaster_cam){
+          this.camera_location = Mat4.look_at (vec3 (0, 10, 10), vec3 (0, 10, -10), vec3 (0, 1, 0));
+        }
+        else if(this.main_scene_cam){
+          this.camera_location = Mat4.look_at(vec3 (0, 33, 37), vec3 (0, 25, 10), vec3 (0, 1, 0));
+        }
+        else if(this.bear_cam){
+          this.camera_location = Mat4.look_at (vec3 (0, 10, -10), vec3 (0, 10, 0), vec3 (0, 1, 0));
+        }
+        else if(this.ride_coaster_cam){
+          let center = this.rollercoaster.get_center();
+          let eye = vec3(center[0]+0.5, center[1], center[2]);
+          this.camera_location = Mat4.look_at (eye, center, vec3 (0, 1, 0));
+        }
+        else if(this.ferris_cam){
+        this.camera_location = Mat4.look_at (vec3 (-20, 10, 0), vec3 (0, 15, 0), vec3 (0, 1, 0));
+        }
+
+        else{
+          this.camera_location = Mat4.look_at(vec3 (0, 33, 37), vec3 (0, 25, 10), vec3 (0, 1, 0));
+        }
+        Shader.assign_camera( this.camera_location, this.uniforms );
         this.uniforms.projection_transform = Mat4.perspective( Math.PI/4, caller.width/caller.height, 1, 100 );
 
         // *** Lights: *** Values of vector or point lights.  They'll be consulted by
@@ -560,9 +593,89 @@ export class Bumper_cars extends Bumper_cars_base
     this.key_triggered_button("Reset Bumper Cars", ["Shift", "R"], this.reset_cars);
     this.new_line();
     this.key_triggered_button("Fireworks", ["f"], this.start_fireworks.bind(this));
+    this.new_line();
+    this.key_triggered_button("View Bumper Cars", ["Shift", "A"], this.view_bumper_cars.bind(this));
+    this.new_line();
+    this.key_triggered_button("View Main Scene", ["Shift", "B"], this.view_main_scene.bind(this));
+    this.new_line();
+    this.key_triggered_button("View Rolleroaster", ["Shift", "C"], this.view_coaster.bind(this));
+    this.new_line();
+    this.key_triggered_button("View Fountain", ["Shift", "D"], this.view_fountain.bind(this));
+    this.new_line();
+    this.key_triggered_button("View Bear", ["Shift", "E"], this.view_bear.bind(this));
+    this.new_line();
+    this.key_triggered_button("Ride Coaster", ["Shift", "F"], this.ride_coaster.bind(this));
+    this.new_line();
+    this.key_triggered_button("View Ferris Wheel", ["Shift", "G"], this.view_ferris.bind(this));
   }
 
+  view_ferris(){
+    this.bumper_cam = false;
+    this.coaster_cam = false;
+    this.fountain_cam = false;
+    this.main_scene_cam = false;
+    this.bear_cam = false;
+    this.ride_coaster_cam = false;
+    this.ferris_cam = true;
+  }
+  ride_coaster(){
+    this.bumper_cam = false;
+    this.coaster_cam = false;
+    this.fountain_cam = false;
+    this.main_scene_cam = false;
+    this.bear_cam = false;
+    this.ride_coaster_cam = true;
+    this.ferris_cam = false;
+  }
+  view_bumper_cars(){
+    this.bumper_cam = true;
+    this.coaster_cam = false;
+    this.fountain_cam = false;
+    this.main_scene_cam = false;
+    this.bear_cam = false;
+    this.ride_coaster_cam = false;
+    this.ferris_cam = false;
+  }
 
+  view_main_scene(){
+    this.bumper_cam = false;
+    this.coaster_cam = false;
+    this.fountain_cam = false;
+    this.main_scene_cam = true;
+    this.bear_cam = false;
+    this.ride_coaster_cam = false;
+    this.ferris_cam = false;
+  }
+
+  view_coaster(){
+    this.bumper_cam = false;
+    this.coaster_cam = true;
+    this.fountain_cam = false;
+    this.main_scene_cam = false;
+    this.bear_cam = false;
+    this.ride_coaster_cam = false;
+    this.ferris_cam = false;
+  }
+
+  view_bear(){
+    this.bumper_cam = false;
+    this.coaster_cam = false;
+    this.fountain_cam = false;
+    this.main_scene_cam = false;
+    this.bear_cam = true;
+    this.ride_coaster_cam = false;
+    this.ferris_cam = false;
+  }
+
+  view_fountain(){
+    this.bumper_cam = false;
+    this.coaster_cam = false;
+    this.fountain_cam = true;
+    this.main_scene_cam = false;
+    this.bear_cam = false;
+    this.ride_coaster_cam = false;
+    this.ferris_cam = false;
+  }
   reset_cars(){
     this.starting_rot_ang = 1/50;
     this.car1 = new Car(-10, 0, 1);

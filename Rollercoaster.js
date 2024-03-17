@@ -94,6 +94,7 @@ export class Rollercoaster{
         this.curve_right = null;
         this.spline_t = 0;
         this.car = new Shape_From_File('./assets/bumper_cars/bumper_car.obj');
+        this.center = vec3(0, 0, 0);
     }
 
     add_rollercoaster(){
@@ -459,13 +460,8 @@ export class Rollercoaster{
             this.main_ride_sample_size = 600;
             this.stage = 0;
         }
-        // let model_transform = Mat4.identity().pre_multiply(Mat4.translation(spline_position[0], spline_position[1], spline_position[2]));
-        // model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
-        // model_transform = model_transform.times(Mat4.translation(0, 1, 0));
+
         let model_transform = this.car_transform(this.spline_t);
-        // let model_transform = Mat4.identity().pre_multiply(Mat4.translation(spline_position[0], spline_position[1], spline_position[2]));
-        // model_transform = this.car_transform(this.spline_t).times(model_transform);
-        // model_transform = model_transform.times(Mat4.scale(.5, .5, .5));
         this.car.draw( caller, uniforms, model_transform, { ...materials.plastic, color: color(0, 0, 1, 1)} );
         this.spline_t += 1/this.main_ride_sample_size;
         if(this.spline_t > 1.0){
@@ -484,6 +480,7 @@ export class Rollercoaster{
         const p2 = this.spline.get_position(time);
         const len = (p2.minus(p1)).norm();
         const center = ((p1.plus(p2)).times(0.5)).plus(vec3(0, 0.5, 0));
+        this.center = ((p1.plus(p2)).times(0.5)).plus(vec3(0, 1.1, 0));
         let model_transform = Mat4.scale(0.5, 0.5, 0.5);
         const p = p1.minus(p2).normalized();
         let v = vec3(0, 1, 0);
@@ -498,6 +495,10 @@ export class Rollercoaster{
         model_transform = model_transform.times(Mat4.rotation(Math.PI/2, 0, 0, 1));
         model_transform = model_transform.times(Mat4.rotation(3*Math.PI/2, 0, 1, 0));
         return model_transform;
+    }
+
+    get_center(){
+        return this.center;
     }
 
     draw(caller, uniforms, materials, shapes){
