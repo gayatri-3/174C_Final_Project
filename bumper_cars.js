@@ -237,6 +237,12 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-20, -1, -40)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(30, -1, -30)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(20, -1, 30)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-40, -1, -20)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-20, -1, 35)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-45, -1, 0)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-45, -1, 15)));
+        // this.trees.push(new TreeDrawer(2, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-10, -3.5, -15)));
+        // this.trees.push(new TreeDrawer(2, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-10, -3.5, -15)));
 
 
 
@@ -387,12 +393,6 @@ export class Bumper_cars extends Bumper_cars_base
     const blue = color( 0,0,1,1 ), yellow = color( 1,0.7,0,1 ), red = color( 1,0,1.0,1.0, 1), flesh = color(1, 0.79, 0.64, 1);
 
     let t = this.t = this.uniforms.animation_time/1000;
-
-    // !!! Draw ball (for reference)
-    let ball_transform = Mat4.translation(this.ball_location[0], this.ball_location[1], this.ball_location[2])
-        .times(Mat4.scale(this.ball_radius, this.ball_radius, this.ball_radius));
-    this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
-
     //Fountain with water drops
     this.fountain.draw(caller, this.uniforms, this.shapes, this.materials);
 
@@ -623,18 +623,6 @@ export class Bumper_cars extends Bumper_cars_base
     this.key_triggered_button("Reset Bumper Cars", ["Shift", "R"], this.reset_cars);
     this.new_line();
     this.key_triggered_button("Fireworks", ["f"], this.start_fireworks.bind(this));
-    this.new_line();
-    this.key_triggered_button("Ride Rollercoaster", ["R"], this.ride_coaster());
-    this.new_line();
-    this.key_triggered_button("View Main Scene", ["V"], this.view_main_scene());
-  }
-
-  ride_coaster(){
-
-  }
-
-  view_main_scene(){
-    //Shader.assign_camera( Mat4.look_at (vec3 (25, 25, -20), vec3 (0, 10, 0), vec3 (0, 1, 0)), this.uniforms );
   }
 
 
