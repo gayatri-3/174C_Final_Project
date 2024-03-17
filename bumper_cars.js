@@ -304,7 +304,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           // perspective() are field of view, aspect ratio, and distances to the near plane and far plane.
 
           // !!! Camera changed here
-          this.initial_camera_location = Mat4.look_at(vec3 (-10, 30, 35), vec3 (0, 20, 10), vec3 (0, 1, 0));
+          this.initial_camera_location = Mat4.look_at(vec3 (0, 33, 37), vec3 (0, 25, 10), vec3 (0, 1, 0));
           Shader.assign_camera( this.initial_camera_location, this.uniforms );
         }
         this.uniforms.projection_transform = Mat4.perspective( Math.PI/4, caller.width/caller.height, 1, 100 );
