@@ -163,48 +163,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         for (var i = 0; i < 8; i++) {
           this.random_colors.push(color(Math.random(), Math.random(), Math.random(), 1)); // Adjust the range as needed
         }
-/*
-        const curve_fn = (t) => this.spline.get_position(t);
-        this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
 
-        const curve_left = (t) => this.spline_left.get_position(t);
-        this.curve_left = new Curve_Shape(curve_left, this.sample_cnt);
-
-        const curve_right = (t) => this.spline_right.get_position(t);
-        this.curve_right = new Curve_Shape(curve_right, this.sample_cnt);
-
-        this.sim = new Simulation();
-        const num = 1;
-        let y_val = 8;
-        for(let i = 0; i < num; i++) {
-          let particle = new Particle();
-          particle.mass = 1.0;
-          particle.pos = vec3(2, y_val-i, 0);
-          particle.vel = vec3(0, 0, 0);
-          this.sim.particles.push(particle);
-        }
-
-<<<<<<< HEAD
-        this.sim_t = 0;
-        this.step_t = 0.001;
-
-=======
-*/
-
-        // for(let i = 0; i < num -1; i++) {
-        //   let spring = new Spring();
-        //   spring.particle_1 = this.sim.particles[i];
-        //   spring.particle_2 = this.sim.particles[i+1];
-        //   spring.ks = 5;
-        //   spring.kd = 0.1;
-        //   spring.rest_length = 1;
-        //   this.sim.springs.push(spring);
-        // }
-/*
-        this.sim.ground_ks = 5000;
-        this.sim.ground_kd = 1;
-        this.sim.g_acc = vec3(0, -9.8, 0);
-*/
         // BUMPER CAR INIT
         this.starting_rot_ang = 1/50;
         this.car1 = new Car(-10, 0, 1);
@@ -214,18 +173,6 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.collided = false;
         this.hit_wall = false;
 
-        //particle system simulation init
-        //this.particle_simulation = new Particle_Simulation();
-/*
-        let n = 5;
-        for(let i = 0; i < n; i++) {
-          let particle = new Particle();
-          particle.mass = 1.0;
-          particle.pos = vec3(-7, 0, (3*i) + 4);
-          particle.vel = vec3(0, 0, 0);
-          this.particle_simulation.particles.push(particle);
-        }
-*/
         //tree init
         const branchColor = [0.5, 0.35, 0.05, 1]; // Brown
         const leafColor = [0.0, 0.8, 0.0, 1]; // Green
@@ -403,12 +350,6 @@ export class Bumper_cars extends Bumper_cars_base
       this.fountain.update(this.sim_t, dt);
       this.sim_t += this.step_t;
     }
-
-    // // !!! Draw ball (for reference)
-    // let ball_transform = Mat4.translation(this.ball_location[0], this.ball_location[1], this.ball_location[2])
-    //     .times(Mat4.scale(this.ball_radius, this.ball_radius, this.ball_radius));
-    // this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
-    // add some fluctuation
 
     // TODO: you should draw spline here.
     //Rollercoaster
@@ -614,11 +555,7 @@ export class Bumper_cars extends Bumper_cars_base
   {                                 // render_controls(): Sets up a panel of interactive HTML elements, including
     // buttons with key bindings for affecting this scene, and live info readouts.
 
-    this.control_panel.innerHTML += "Part Two:";
-    this.new_line();
-    this.key_triggered_button( "Config", [], this.parse_commands );
-    this.new_line();
-    this.key_triggered_button( "Run", [], this.start );
+    this.control_panel.innerHTML += "Buttons:";
     this.new_line();
     this.key_triggered_button("Reset Bumper Cars", ["Shift", "R"], this.reset_cars);
     this.new_line();
@@ -641,55 +578,5 @@ export class Bumper_cars extends Bumper_cars_base
     this.fireworks = new FireworksDisplay(30, 100, 20, 2);
     this.night = true;
     this.fireworks_animation_counter = 0;
-  }
-
-  parse_commands() {
-    let text = document.getElementById("input").value;
-    //TODO
-    //this.spline = new Spline();
-    const lines = text.split('\n');
-    for (const line of lines) {
-      try {
-        this._parse_line(line);
-      } catch (error) {
-        console.error(error);
-        document.getElementById("output").value = "invalid";
-        return;
-      }
-    }
-  }
-
-  _parse_line(line){
-    const words = line.trim().split(/\s+/);
-    if(words[0] === "add"){
-      const x = parseFloat(words[2]);
-      const y = parseFloat(words[3]);
-      const z = parseFloat(words[4]);
-      const tx = parseFloat(words[5]);
-      const ty = parseFloat(words[6]);
-      const tz = parseFloat(words[7]);
-      this.spline.add_points(x, y, z, tx, ty, tz);
-    }
-    else if(words[0] === "set" && words[1] === "point"){
-      let index = parseInt(words[2]);
-      this.spline.set_point(index, words[3], words[4], words[5]);
-    }
-    else if(words[0] === "set" && words[1] === "tangent"){
-      let index = parseInt(words[2]);
-      this.spline.set_tan(index, words[3], words[4], words[5]);
-    }
-    else if(words[0] === "get_arc_length"){
-      document.getElementById("output").value = this.spline._get_arc_length();
-    }
-    else{
-      throw "invalid command" + words[0];
-    }
-  }
-
-  update_scene() { // callback for Draw button
-    document.getElementById("output").value = "update_scene";
-    //TODO
-    const curve_fn = (t) => this.spline.get_positions(t);
-    this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
   }
 }
