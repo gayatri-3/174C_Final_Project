@@ -632,8 +632,7 @@ export class Bumper_cars extends Bumper_cars_base
 
   start_fireworks() {
     this.fireworks_animation = true;
-    this.fireworks = new FireworksDisplay(20, 100, 30, w);
-    this.fireworks = new FireworksDisplay(20, 100, 20, 5);
+    this.fireworks = new FireworksDisplay(30, 100, 20, 5);
   }
 
   parse_commands() {
