@@ -233,8 +233,12 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         const branchLength = 2;
         const branchScaleFactor = 0.5; // Adjust the branch scaling factor
         const leafScaleFactor = 1; // Adjust the leaf scaling factor
-        const treeTranslation = Mat4.translation(-5, -1, 5);
-        this.tree = new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, treeTranslation);
+        this.trees = [];
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-20, -1, -40)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(30, -1, -30)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(20, -1, 30)));
+
+
 
         //fireworks init
         this.fireworks_animation = false;
@@ -461,7 +465,9 @@ export class Bumper_cars extends Bumper_cars_base
     // console.log("Collision?: " + this.car1.has_collided(this.car2));
 
     //draw tree
-    this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
+    for(let i = 0; i < this.trees.length; i++) {
+      this.trees[i].draw(caller, this.uniforms, this.shapes, this.materials);
+    }
 
 
     // draw fireworks when button pressed
