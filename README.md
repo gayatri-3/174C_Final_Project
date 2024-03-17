@@ -4,13 +4,13 @@
 ## Group Members
 
 Gayatri Puppala (805768600)
-* worked on Particle System (Fireworks), Trees, Carnival Stalls
+* Particle System (Fireworks), Trees, Carnival Stalls
 
 Pavana Atawale (805503073)
 * Bezier Curves (Fountain)
 
 Adithi Ramesh (105491865)
-* Hermite Spline (Roller Coaster)
+* Hermite Spline (Roller Coaster), Camera Angles
 
 Ethan Dao (205687051)
 * Collision Detection (Bumper Cars), Inverse Kinematics (Mascot), Ferris Wheel
