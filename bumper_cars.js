@@ -221,6 +221,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         //fireworks init
         this.fireworks_animation = false;
+        this.night = false;
         this.fireworks_animation_counter = 0;
         // for some reason cannot change these values
         //this.fireworks = new FireworksDisplay(10, 10, 10, 2);
@@ -458,16 +459,24 @@ export class Bumper_cars extends Bumper_cars_base
       const currentTime = performance.now() / 1000; // Convert to seconds
       const dt = currentTime - lastTimestamp;
       lastTimestamp = currentTime;
+
       this.fireworks.update(dt);
       this.fireworks.draw(caller, this.uniforms, this.shapes, this.materials);
-      let sky_transform = Mat4.identity().times(Mat4.scale(49,49,49));
-      this.shapes.ball.draw(caller, this.uniforms, sky_transform, {...this.materials.plastic, color: color(0,0,0.2,1)});
+
       this.fireworks_animation_counter++;
     }
-    if(this.fireworks_animation_counter > 500){
-      this.fireworks_animation = false;
+
+    if(this.fireworks_animation_counter > 200){
+      this.night = false;
       this.fireworks_animation_counter = 0;
     }
+
+    if (this.night){
+      let sky_transform = Mat4.identity().times(Mat4.scale(49,49,49));
+      this.shapes.ball.draw(caller, this.uniforms, sky_transform, {...this.materials.plastic, color: color(0,0,0.2,1)});
+    }
+
+
     console.log(this.fireworks_animation_counter);
 
     // animatronic
@@ -564,6 +573,8 @@ export class Bumper_cars extends Bumper_cars_base
   start_fireworks() {
     this.fireworks_animation = true;
     this.fireworks = new FireworksDisplay(20, 100, 20, 5);
+    this.night = true;
+    this.fireworks_animation_counter = 0;
   }
 
   parse_commands() {
