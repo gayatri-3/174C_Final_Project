@@ -29,7 +29,6 @@ import {Text_Demo}
 import {Transforms_Sandbox_Base, Transforms_Sandbox}
     from "./examples/transforms-sandbox.js";
 
-import {Part_one_hermite} from "./part_one_hermite.js";
 import { Bumper_cars } from './bumper_cars.js';
 
 Object.assign (defs,
@@ -43,7 +42,6 @@ Object.assign (defs,
     {Scene_To_Texture_Demo},
     {Text_Demo},
     {Transforms_Sandbox_Base, Transforms_Sandbox},
-    {Part_one_hermite}
 );
 
 // ******************** SELECT THE DEMO TO DISPLAY:
