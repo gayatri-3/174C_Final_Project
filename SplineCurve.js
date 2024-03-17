@@ -492,7 +492,6 @@ export class FireworksDisplay {
     }
 
     update(dt) {
-        //console.log("update caled");
         const gravity = vec3(0, -9.81, 0);
 
         for (let i = 0; i < this.fireworks.length; i++) {
@@ -549,7 +548,7 @@ export class FireworksDisplay {
 
     draw(webgl_manager, uniform, shapes, materials) {
         for (const fireworks of this.fireworks) {
-            const model_transform = Mat4.translation(...fireworks.position);
+            const model_transform = Mat4.translation(...fireworks.position).times(Mat4.scale(0.5,0.5,0.5));
             shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: fireworks.color});
         }
     }
