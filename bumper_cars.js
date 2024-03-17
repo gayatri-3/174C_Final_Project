@@ -125,7 +125,15 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
         this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
-        this.materials.carnival_stand_bottom = {shader: tex_phong, ambient: 1, texture: new Texture("assets/carnival_bottom.jpg")}
+
+        //carnival stands materials
+        this.materials.red_white_stripes = {shader: tex_phong, ambient: 1, texture: new Texture("assets/red_white_stripes.jpg")}
+        this.materials.blue_white_stripes = {shader: tex_phong, ambient: 1, texture: new Texture("assets/blue_white_stripes.png")}
+        this.materials.ticket_booth = {shader: tex_phong, ambient: 1, texture: new Texture("assets/ticket_booth_square.png")}
+        this.materials.popcorn_booth = {shader: tex_phong, ambient: 1, texture: new Texture("assets/popcorn.png")}
+        this.materials.ice_cream_booth = {shader: tex_phong, ambient: 1, texture: new Texture("assets/ice_cream.png")}
+
+
         //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
         this.materials.flesh   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  0, color: color( .9,.5,.9,1 ) }
@@ -374,30 +382,9 @@ export class Bumper_cars extends Bumper_cars_base
     //Rollercoaster
     this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
 
-    let carnival_stand_transform = Mat4.identity();
-    this.carnival_stand.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials);
+    let carnival_stand_transform = Mat4.identity().times(Mat4.translation(1,1,1));
+    this.carnival_stand.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "ice_cream");
 
-    // draw particle system
-    //this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
-
-//    this.particle_simulation.draw(caller, this.uniforms, this.shapes, this.materials);
-    //this.shapes.ball.draw( caller, this.uniforms, ball_transform, { ...this.materials.metal, color: blue } );
-//    console.log(this.particle_simulation);
-
-
-    /*
-    let dt = 1/60;
-    dt = Math.min(1/30, dt);
-
-    let t_next = this.t_sim + dt;
-    while(this.t_sim < t_next) {
-      let point1 = this.spline.get_position(Math.pow(Math.sin(this.t_sim / 5),2));
-      this.sim.update(this.t_step, point1);
-      //this.particle_simulation.update(t_step);
-      // console.log(point1);
-      this.t_sim += this.t_step;
-    }
-*/
     // BUMPER CARS!!!!
     let friction = 1/10000;
     let translational_friction = 1/100;
@@ -453,6 +440,7 @@ export class Bumper_cars extends Bumper_cars_base
     //draw tree
     this.tree.draw(caller, this.uniforms, this.shapes, this.materials);
 
+
     // draw fireworks when button pressed
     if (this.fireworks_animation === true) {
       //draw fireworks
@@ -466,11 +454,13 @@ export class Bumper_cars extends Bumper_cars_base
       this.fireworks_animation_counter++;
     }
 
+    // after 200 loops, make it day again
     if(this.fireworks_animation_counter > 200){ // increase counter to make night sky stay longer
       this.night = false;
       this.fireworks_animation_counter = 0;
     }
 
+    // change sky if night
     if (this.night){
       let sky_transform = Mat4.identity().times(Mat4.scale(49,49,49));
       this.shapes.ball.draw(caller, this.uniforms, sky_transform, {...this.materials.plastic, color: color(0,0,0.2,1)});
