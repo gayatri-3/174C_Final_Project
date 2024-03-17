@@ -104,11 +104,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
            'sky': new defs.Subdivision_Sphere(4),
           'fence' : new Shape_From_File("./assets/fence/fence.obj"),
           'human': new Articulated_Human(),
-          'cylinder' : new defs.Cylindrical_Tube(10, 10),
-          'cone' : new defs.Cone_Tip(10, 10),
           'ferris-wheel-base' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel2.obj"),
           'ferris-wheel-car' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel_car.obj"),
-          'mascot-head' : new Shape_From_File("./assets/mascot/mascot.obj")
+          'mascot-head' : new Shape_From_File("./assets/mascot/mascot.obj"),
           'cylinder' : new defs.Rounded_Capped_Cylinder(50, 32, [[0, 10], [0, 5]]),
           'cone' : new defs.Rounded_Closed_Cone(20, 4, [[0, 10], [0, 5]])
         };
