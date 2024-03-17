@@ -7,7 +7,7 @@ const { vec3, vec4, color, Mat4, Shape, Material, Shader, Texture, Component } =
 
 import {BezierCurve, Fountain} from "./fountain.js";
 import {Rollercoaster} from "./Rollercoaster.js";
-import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer, FireworksDisplay, CarnivalStand} from "./SplineCurve.js";
+import {Curve_Shape, Spline, Particle, Spring, Simulation, Particle_Simulation, TreeDrawer, FireworksDisplay, CarnivalStand, Stage} from "./SplineCurve.js";
 
 let lastTimestamp = performance.now() / 1000;
 
@@ -248,6 +248,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.carnival_stand_icecream = new CarnivalStand();
         this.carnival_stand_popcorn = new CarnivalStand();
 
+        // stage init
+        this.stage = new Stage();
+
         // animatronic
         this.spline = new Spline();
         this.spline.add_point(-8, 25.0, 62.15, 2, 0.0, 0.0);
@@ -268,8 +271,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         this.human = new Articulated_Human;
         this.right_target_pos = vec3(-4.5, 12.0, 32.15);
-        this.left_target_pos = vec3(2.5, 12.0, 32.15);
-        this.left_target_pos = vec3(2.5, 4.0, 32.15);
+        //this.left_target_pos = vec3(2.5, 12.0, 32.15);
+        //this.left_target_pos = vec3(2.5, 4.0, 32.15);
       }
 
       render_animation( caller )
@@ -518,6 +521,9 @@ export class Bumper_cars extends Bumper_cars_base
     for (let i = 0; i < this.ferris_wheel_car_transforms.length; i++){
       this.shapes['ferris-wheel-car'].draw(caller, this.uniforms, this.ferris_wheel_car_transforms[i], {...this.materials.metal, color : this.random_colors[i]});
     }
+    // draw stage for the animatronic
+    let stage_transform = Mat4.identity().times(Mat4.translation(-3,0,35));
+    this.stage.draw(caller, this.uniforms, this.shapes, stage_transform, this.materials);
 
     // animatronic
     // mascot
@@ -534,22 +540,22 @@ export class Bumper_cars extends Bumper_cars_base
     let belly_transform = Mat4.scale(1, 3, 1.5).pre_multiply(Mat4.translation(-3.1, 10, 34.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
     this.shapes.ball.draw(caller, this.uniforms, belly_transform, {...this.materials.plastic, color : flesh });
     let lu_leg_transform = Mat4.scale(0.4, 1.6, .6);
-    lu_leg_transform.pre_multiply(Mat4.translation(-4.2, 5, 35));
+    lu_leg_transform.pre_multiply(Mat4.translation(-4.2, 5.5, 35));
     this.shapes.ball.draw(caller, this.uniforms, lu_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let ll_leg_transform = Mat4.scale(0.4, 2, .2);
-    ll_leg_transform.pre_multiply(Mat4.translation(-4.2, 1.8, 35));
+    ll_leg_transform.pre_multiply(Mat4.translation(-4.2, 2.3, 35));
     this.shapes.ball.draw(caller, this.uniforms, ll_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let ru_leg_transform = Mat4.scale(0.4, 1.6, .6);
-    ru_leg_transform.pre_multiply(Mat4.translation(-1.8, 5, 35));
+    ru_leg_transform.pre_multiply(Mat4.translation(-1.8, 5.5, 35));
     this.shapes.ball.draw(caller, this.uniforms, ru_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let rl_leg_transform = Mat4.scale(0.4, 2, .2);
-    rl_leg_transform.pre_multiply(Mat4.translation(-1.8, 1.8, 35));
+    rl_leg_transform.pre_multiply(Mat4.translation(-1.8, 2.3, 35));
     this.shapes.ball.draw(caller, this.uniforms, rl_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let l_foot_transform = Mat4.scale(1, 1, 1);
-    l_foot_transform.pre_multiply(Mat4.translation(-4.2, 0.6, 34.65));
+    l_foot_transform.pre_multiply(Mat4.translation(-4.2, 1, 34.65));
     this.shapes.ball.draw(caller, this.uniforms, l_foot_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let r_foot_transform = Mat4.scale(1, 1, 1);
-    r_foot_transform.pre_multiply(Mat4.translation(-1.8, 0.6, 34.65));
+    r_foot_transform.pre_multiply(Mat4.translation(-1.8, 1, 34.65));
     this.shapes.ball.draw(caller, this.uniforms, r_foot_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     this.human.draw(caller, this.uniforms, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
 
