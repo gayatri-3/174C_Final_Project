@@ -210,15 +210,15 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // animatronic
         this.spline = new Spline();
-        this.spline.add_point(-8, 25.0, 62.15, 2, 0.0, 0.0);
-        this.spline.add_point(-6, 15.0, 62.15, -2, 0.0, 0.0);
-        this.spline.add_point(-8, 25.0, 62.15, -2, 0.0, 0.0);
+        this.spline.add_point(-8, 25.0, 55.15, 2, 0.0, 0.0);
+        this.spline.add_point(-6, 15.0, 55.15, -2, 0.0, 0.0);
+        this.spline.add_point(-8, 25.0, 55.15, -2, 0.0, 0.0);
 
         // comment
         this.spline2 = new Spline();
-        this.spline2.add_point(-3, 25.0, 62.15, -2, 0.0, 0.0);
-        this.spline2.add_point(-3, 15.0, 62.15, 2, 0.0, 0.0);
-        this.spline2.add_point(-3, 25.0, 62.15, 4, 0.0, 0.0);
+        this.spline2.add_point(-1, 23.0, 55.15, -1, 0.0, 0.0);
+        this.spline2.add_point(-3, 15.0, 55.15, 1, 0.0, 0.0);
+        this.spline2.add_point(-1, 23.0, 55.15, 1, 0.0, 0.0);
 
         const curve_fn = (t) => this.spline.get_position(t);
         const curve_fn2 = (t) => this.spline2.get_position(t);
@@ -227,9 +227,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.curve2 = new Curve_Shape(curve_fn2, this.sample_cnt2);
 
         this.human = new Articulated_Human;
-        this.right_target_pos = vec3(-4.5, 12.0, 32.15);
-        //this.left_target_pos = vec3(2.5, 12.0, 32.15);
-        //this.left_target_pos = vec3(2.5, 4.0, 32.15);
+        // this.right_target_pos = vec3(-4.5, 12.0, 32.15);
+        this.left_target_pos = vec3(2.5, 12.0, 32.15);
+        this.left_target_pos = vec3(2.5, 12.0, 32.15);
       }
 
       render_animation( caller )
