@@ -76,9 +76,9 @@ export class Fountain {
         this.numStreams = 8;
         this.numDrops = 10;
         this.drops = [];
-        this.baseX = -25;
+        this.baseX = -20;
         this.baseY = 3;
-        this.baseZ = -20;
+        this.baseZ = -25;
     }
 
     init() {
