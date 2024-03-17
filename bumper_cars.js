@@ -105,7 +105,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           'fence' : new Shape_From_File("./assets/fence/fence.obj"),
           'human': new Articulated_Human(),
           'cylinder' : new defs.Rounded_Capped_Cylinder(50, 32, [[0, 10], [0, 5]]),
-          'cone' : new defs.Rounded_Closed_Cone(20, 4, [[0, 10], [0, 5]])
+          'cone' : new defs.Rounded_Closed_Cone(50, 4, [[0, 10], [0, 5]])
         };
 
         this.curve_fn = null;
@@ -125,7 +125,7 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
         this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
-        this.materials.carnival_stand_bottom = {shader: tex_phong, ambient: 1, texture: new Texture("assets/red_white_stripes.jpg")}
+        this.materials.carnival_stand_bottom = {shader: tex_phong, ambient: 1, texture: new Texture("assets/carnival_bottom.jpg")}
         //this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky_cartoon.png")}
         this.materials.ground = {shader: tex_phong, ambient: 1, texture: new Texture("assets/grass_1.jpg")}
         this.materials.flesh   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  0, color: color( .9,.5,.9,1 ) }
@@ -466,7 +466,7 @@ export class Bumper_cars extends Bumper_cars_base
       this.fireworks_animation_counter++;
     }
 
-    if(this.fireworks_animation_counter > 200){
+    if(this.fireworks_animation_counter > 200){ // increase counter to make night sky stay longer
       this.night = false;
       this.fireworks_animation_counter = 0;
     }
@@ -476,8 +476,6 @@ export class Bumper_cars extends Bumper_cars_base
       this.shapes.ball.draw(caller, this.uniforms, sky_transform, {...this.materials.plastic, color: color(0,0,0.2,1)});
     }
 
-
-    console.log(this.fireworks_animation_counter);
 
     // animatronic
     let lu_leg_transform = Mat4.scale(0.4, 1.6, .6);

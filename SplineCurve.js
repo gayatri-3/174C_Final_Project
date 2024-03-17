@@ -506,7 +506,7 @@ export class FireworksDisplay {
             // Check for burst
             if (this.fireworks[i].remainingBursts > 0 && this.fireworks[i].velocity[1] < 0 && this.fireworks[i].previousVelocity[1] > 0) {
                 this.triggerBurst(this.fireworks[i]);
-                console.log(this.fireworks[i].remainingBursts);
+                //console.log(this.fireworks[i].remainingBursts);
                 this.fireworks[i].remainingBursts--; // Decrement remaining bursts
             }
         }
@@ -559,14 +559,19 @@ export class CarnivalStand {
         // Material properties
         //this.material = { ambient: 0.4, diffusivity: 0.6, color: color(0, 0, 1, 1) };
         this.blue = color(0,0,1,1);
-        this.red = color(0,1,1,1);
+        this.red = color(1,0,0,1);
     }
 
-    draw(webgl_manager, uniform, shapes, model_transform, materials) {
+    draw(webgl_manager, uniform, shapes, model_transform, materials, option) {
+
+        let base = materials.carnival_stand_bottom;
+        let pillar_color = this.red;
+        let top_banner = materials.carnival_stand_bottom;
+        let top_color = this.red;
 
         // Draw base (box)
         let base_transform = model_transform.times(Mat4.translation(0, 1, 0)).times(Mat4.scale(3, 2, 3));
-        shapes.box.draw(webgl_manager, uniform, base_transform, {...materials.plastic, color: this.blue});
+        shapes.box.draw(webgl_manager, uniform, base_transform, materials.carnival_stand_bottom);
 
         let pillar_start_height = 4;
         let pillar_width = 4;
@@ -597,7 +602,7 @@ export class CarnivalStand {
         shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: this.red});
 
         base_transform = Mat4.identity().times(Mat4.translation(0, 7, 0)).times(Mat4.scale(3, 1, 3));
-        shapes.box.draw(webgl_manager, uniform, base_transform, {...materials.plastic, color: this.blue});
+        shapes.box.draw(webgl_manager, uniform, base_transform, materials.carnival_stand_bottom);
 
         // Draw top (cone)
         let cone_transform = Mat4.identity()
@@ -605,8 +610,7 @@ export class CarnivalStand {
             .times(Mat4.rotation(-Math.PI / 2, 1,0,0))
             .times(Mat4.rotation(-Math.PI / 4, 0,0,1))
             .times(Mat4.scale(4, 4, 1.5));
-        shapes.cone.draw(webgl_manager, uniform, cone_transform, {...materials.plastic, color: this.blue});
-
+        shapes.cone.draw(webgl_manager, uniform, cone_transform, {...materials.plastic, color: this.red});
 
 
 
