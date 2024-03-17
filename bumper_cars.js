@@ -237,6 +237,12 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-20, -1, -40)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(30, -1, -30)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(20, -1, 30)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-40, -1, -20)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-20, -1, 35)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-45, -1, 0)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-45, -1, 15)));
+        // this.trees.push(new TreeDrawer(2, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-10, -3.5, -15)));
+        // this.trees.push(new TreeDrawer(2, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-10, -3.5, -15)));
 
 
 
