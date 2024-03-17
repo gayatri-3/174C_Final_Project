@@ -74,17 +74,17 @@ export class Fountain {
         this.fountain = [];
         this.curves = [];
         this.numStreams = 8;
-        this.numDrops = 10;
+        this.numDrops = 20;
         this.drops = [];
         this.baseX = -25;
-        this.baseY = 2;
+        this.baseY = 3;
         this.baseZ = 0;
     }
 
     init() {
         for(let i = 0; i < this.numStreams; i++) {
 
-            let yscale = 3;
+            let yscale = 5;
             let xscale = 1;
             let zscale = 0.5;
             if(i >= this.numStreams/2) {
@@ -134,17 +134,22 @@ export class Fountain {
         // }
 
         const blue = color(0, 0, 1, 1);
-        const red = color(1, 0, 0, 1);
 
         //draw base
-
+        let base_transform = Mat4.scale(6, 3, 6).times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
+        base_transform.pre_multiply(Mat4.translation(this.baseX, 1.5, 0));
+        shapes.cylinder.draw(webgl_manager, uniform, base_transform, materials.stone);
+        let water_transform = Mat4.scale(5.5, 0.1, 5.5).times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
+        water_transform.pre_multiply(Mat4.translation(this.baseX, 3, 0));
+        // shapes.cylinder.draw(webgl_manager, uniform, water_transform, {...materials.plastic, color: blue});
+        shapes.cylinder.draw(webgl_manager, uniform, water_transform, materials.water);
 
         for (let i = 0; i < this.numStreams; i++) {
             for(let j = 0; j < this.numDrops; j++) {
                 const pos = this.drops[i][j].pos;
-                let model_transform = Mat4.scale(0.1, 0.1, 0.1);
+                let model_transform = Mat4.scale(0.5, 0.5, 0.5);
                 model_transform.pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
-                shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: blue});
+                shapes.ball.draw(webgl_manager, uniform, model_transform, materials.water);
             }
         }
     }
