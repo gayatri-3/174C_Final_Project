@@ -73,3 +73,14 @@ We used the shapes from the common-shapes.js file to crete a carnival stall usin
 We added custom textures to enhance the carnival feel.
 
 3. **Ferris Wheel**
+
+4. **Camera Angle Change**
+We are changing the camera angle depending on which element we want to see. There are the following camera positions:
+   1. View Main Scene - This is what the project scene starts with
+   2. View Rollercoaster - Gives a clear view of the rollercoaster
+   3. View Bumper Cars - Gives a clear view of the bumper car
+   4. View Fountain - Gives a clear view of the fountain
+   5. View Ferris Wheel - Gives a clear view of the ferris wheel
+   6. Ride Rollercoaster - Places the camera in the car gives the simulation of riding the rollercoaster
+   7. View Bear - Shows the Bear Mascot clearly on its stage
+

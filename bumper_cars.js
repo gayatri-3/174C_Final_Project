@@ -272,10 +272,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           this.camera_location = Mat4.look_at(vec3 (20, 15, 15), vec3 (10, 10, 5), vec3 (0, 1, 0));
         }
         else if(this.fountain_cam){
-          this.camera_location = Mat4.look_at(vec3 (-12, 5, 0), vec3 (-30, 10, -30), vec3 (0, 1, 0));
+          this.camera_location = Mat4.look_at(vec3 (-10, 8, -15), vec3 (-30, 3, -35), vec3 (0, 1, 0));
         }
         else if(this.coaster_cam){
-          this.camera_location = Mat4.look_at (vec3 (0, 10, 10), vec3 (0, 10, -10), vec3 (0, 1, 0));
+          this.camera_location = Mat4.look_at (vec3 (0, 20, 10), vec3 (0, 17, -10), vec3 (0, 1, 0));
         }
         else if(this.main_scene_cam){
           this.camera_location = Mat4.look_at(vec3 (0, 33, 37), vec3 (0, 25, 10), vec3 (0, 1, 0));
