@@ -98,7 +98,7 @@ export class Rollercoaster{
 
     add_rollercoaster(){
         //Initializing rollercoaster points
-        //Rise to gain PE
+        //Rise
         this.spline.add_point(15.0, 2.0, -25.0, 0.0, 0.0, 0.0);
         this.spline.add_point(14.5, 2.5, -25.0, -15.0, 15.0, 0.0);
         this.spline.add_point(14.0, 3.0, -25.0, -15.0, 15.0, 0.0);
@@ -156,10 +156,6 @@ export class Rollercoaster{
         this.spline.add_point(-7.0, 10.0, -41.0, 0.0, -700.0, 0.0);
         this.spline.add_point(0.0, 2.0, -41.0, 700.0, 0.0, 0.0);
         //right side slow down
-        // this.spline.add_point(5.0, 2.0, -41.0, 30.0, 0.0, 0.0);
-        // this.spline.add_point(10.0, 2.0, -41.0, 30.0, 0.0, 0.0);
-        // this.spline.add_point(15.0, 2.0, -41.0, 100.0, 0.0, 200.0);
-        // this.spline.add_point(15.0, 2.0, -25.0, -500.0, 200.0, 0.0);
 
         this.spline.add_point(5.0, 2.0, -41.0, 30.0, 0.0, 0.0);
         this.spline.add_point(20.0, 2.0, -41.0, 200.0, 0.0, 0.0);
@@ -223,10 +219,6 @@ export class Rollercoaster{
         this.spline_left.add_point(0.0, 20.0, -38.5, -700.0, 0.0, 0.0);
         this.spline_left.add_point(-7.0, 10.0, -40.5, 0.0, -700.0, 0.0);
         this.spline_left.add_point(0.0, 2.0, -40.5, 700.0, 0.0, 0.0);
-        // this.spline_left.add_point(5.0, 2.0, -40.5, 30.0, 0.0, 0.0);
-        // this.spline_left.add_point(10.0, 2.0, -40.5, 30.0, 0.0, 0.0);
-        // this.spline_left.add_point(15.0, 2.0, -40.5, 100.0, 0.0, 200.0);
-        // this.spline_left.add_point(15.0, 2.0, -24.5, -500.0, 200.0, 0.0);
 
         this.spline_left.add_point(5.0, 2.0, -40.5, 30.0, 0.0, 0.0);
         this.spline_left.add_point(20.0, 2.0, -40.5, 200.0, 0.0, 0.0);
@@ -289,10 +281,6 @@ export class Rollercoaster{
         this.spline_right.add_point(0.0, 20.0, -39.5, -700.0, 0.0, 0.0);
         this.spline_right.add_point(-7.0, 10.0, -41.5, 0.0, -700.0, 0.0);
         this.spline_right.add_point(0.0, 2.0, -41.5, 700.0, 0.0, 0.0);
-        // this.spline_right.add_point(5.0, 2.0, -41.5, 30.0, 0.0, 0.0);
-        // this.spline_right.add_point(10.0, 2.0, -41.5, 30.0, 0.0, 0.0);
-        // this.spline_right.add_point(15.0, 2.0, -41.5, 100.0, 0.0, 200.0);
-        // this.spline_right.add_point(15.0, 2.0, -25.5, -500.0, 200.0, 0.0);
 
         this.spline_right.add_point(5.0, 2.0, -41.5, 30.0, 0.0, 0.0);
         this.spline_right.add_point(20.0, 2.0, -41.5, 200.0, 0.0, 0.0);
@@ -486,27 +474,6 @@ export class Rollercoaster{
     }
 
     car_transform(time){
-        // let t = this.spline.get_tangent(time);
-        // let c = this.spline.get_curvature(time);
-        // if(t[0] !== 0 && t[1] !== 0 && t[2] !== 0){
-        //     t = t.normalized();
-        // }
-        //
-        // if(c[0] !== 0 && c[1] !== 0 && c[2] !== 0){
-        //     c = c.normalized();
-        // }
-        // let v = t.cross(c);
-        // if(v[0] !== 0 && v[1] !== 0 && v[2] !== 0){
-        //     v = v.normalized();
-        // }
-        //
-        // let mat = Mat4.identity();
-        // mat[0] = [t[0], c[0], v[0], 0.0];
-        // mat[1] = [t[1], c[1], v[1], 0.0];
-        // mat[2] = [t[2], c[2], v[2], 0.0];
-        //
-        // return mat;
-
         const p1 = this.spline.get_position(time);
         if(time+0.01 > 1.0){
             time = 0.0;
