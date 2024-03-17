@@ -78,7 +78,7 @@ export class Fountain {
         this.drops = [];
         this.baseX = -25;
         this.baseY = 3;
-        this.baseZ = 0;
+        this.baseZ = -20;
     }
 
     init() {
@@ -137,10 +137,10 @@ export class Fountain {
 
         //draw base
         let base_transform = Mat4.scale(6, 3, 6).times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
-        base_transform.pre_multiply(Mat4.translation(this.baseX, 1.5, 0));
+        base_transform.pre_multiply(Mat4.translation(this.baseX, 1.5, this.baseZ));
         shapes.cylinder.draw(webgl_manager, uniform, base_transform, materials.stone);
         let water_transform = Mat4.scale(5.5, 0.1, 5.5).times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
-        water_transform.pre_multiply(Mat4.translation(this.baseX, 3, 0));
+        water_transform.pre_multiply(Mat4.translation(this.baseX, 3, this.baseZ));
         // shapes.cylinder.draw(webgl_manager, uniform, water_transform, {...materials.plastic, color: blue});
         shapes.cylinder.draw(webgl_manager, uniform, water_transform, materials.water);
 
