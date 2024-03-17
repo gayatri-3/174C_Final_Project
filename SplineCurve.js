@@ -637,3 +637,61 @@ export class CarnivalStand {
     }
 }
 
+export class Stage {
+    constructor() {
+        // Material properties
+        //this.material = { ambient: 0.4, diffusivity: 0.6, color: color(0, 0, 1, 1) };
+        this.blue = color(0,0,1,1);
+        this.red = color(1,0,0,1);
+        this.white = color(1,1,1,1);
+    }
+
+    draw(webgl_manager, uniform, shapes, model_transform, materials) {
+
+        let base = materials.red_white_stripes;
+        let pillar_color = this.red;
+        let stripes = materials.red_white_stripes;
+
+        // Draw base (box)
+        let base_transform = model_transform.times(Mat4.translation(0, 0, 0)).times(Mat4.scale(15, 1, 10 ));
+        shapes.box.draw(webgl_manager, uniform, base_transform, base);
+
+        let pillar_start_height = 0;
+        let pillar_x = 25;
+        let pillar_z = 15;
+        // Draw pillars (cylinders)
+        let pillar_transform = model_transform
+            .times(Mat4.translation(pillar_x/2, pillar_start_height, pillar_z/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+            .times(Mat4.scale(2, 2, 45)) // Then apply scaling
+
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: pillar_color});
+
+        pillar_transform = model_transform
+            .times(Mat4.translation(-pillar_x/2, pillar_start_height, -pillar_z/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+            .times(Mat4.scale(2, 2, 45)) // Then apply scaling
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: pillar_color});
+
+        pillar_transform = model_transform
+            .times(Mat4.translation(pillar_x/2, pillar_start_height, -pillar_z/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+            .times(Mat4.scale(2, 2, 45)) // Then apply scaling
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: pillar_color});
+
+        pillar_transform = model_transform
+            .times(Mat4.translation(-pillar_x/2, pillar_start_height, pillar_z/2)) // First, apply translation
+            .times(Mat4.rotation(Math.PI/2, 1, 0, 0))
+            .times(Mat4.scale(2, 2, 45)) // Then apply scaling
+        shapes.cylinder.draw(webgl_manager, uniform, pillar_transform, {...materials.plastic, color: pillar_color});
+
+
+        base_transform = model_transform
+            .times(Mat4.translation(0, 22, 0))
+            .times(Mat4.scale(15, 2, 10));
+        shapes.box.draw(webgl_manager, uniform, base_transform, stripes);
+
+
+    }
+}
+
