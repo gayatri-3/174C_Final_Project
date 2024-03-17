@@ -76,16 +76,17 @@ export class Fountain {
         this.numStreams = 8;
         this.numDrops = 10;
         this.drops = [];
+        this.baseX = -25;
+        this.baseY = 3;
+        this.baseZ = -20;
     }
 
     init() {
         for(let i = 0; i < this.numStreams; i++) {
-            let baseX = -25;
-            let baseY = 2;
-            let baseZ = 0;
-            let yscale = 3;
-            let xscale = 1;
-            let zscale = 1;
+
+            let yscale = 2;
+            let xscale = 0.5;
+            let zscale = 0.5;
             if(i >= this.numStreams/2) {
                 yscale *= (i % this.numStreams/2);
                 xscale *= (i % this.numStreams/2);
@@ -100,17 +101,17 @@ export class Fountain {
                 zscale *= -1;
             }
             this.fountain[i] = new BezierCurve();
-            this.fountain[i].add_point(baseX, baseY, baseZ);
-            this.fountain[i].add_point(baseX - 2*xscale, baseY + 1 + yscale, baseZ + zscale);
-            this.fountain[i].add_point(baseX - xscale, baseY + 2 + 2*yscale, baseZ + zscale);
-            this.fountain[i].add_point(baseX + xscale, baseY + yscale, baseZ);
+            this.fountain[i].add_point(this.baseX, this.baseY, this.baseZ);
+            this.fountain[i].add_point(this.baseX + 2*xscale, this.baseY + 1 + yscale, this.baseZ - zscale);
+            this.fountain[i].add_point(this.baseX + xscale, this.baseY + 2 + 2*yscale, this.baseZ - zscale);
+            this.fountain[i].add_point(this.baseX - xscale, this.baseY + yscale, this.baseZ);
 
             let curve_fn = (t) => this.fountain[i].get_position(t);
             this.curves[i] = new Curve_Shape(curve_fn, 1000);
 
             let drop = [];
             for(let j = 0; j < this.numDrops; j++) {
-                drop[j] = new Drop(baseX, baseY, baseZ);
+                drop[j] = new Drop(this.baseX, this.baseY, this.baseZ);
             }
             this.drops[i] = drop;
         }
@@ -133,14 +134,22 @@ export class Fountain {
         // }
 
         const blue = color(0, 0, 1, 1);
-        const red = color(1, 0, 0, 1);
+
+        //draw base
+        let base_transform = Mat4.scale(5, 3, 5).times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
+        base_transform.pre_multiply(Mat4.translation(this.baseX, 1.5, this.baseZ));
+        shapes.cylinder.draw(webgl_manager, uniform, base_transform, materials.stone);
+        let water_transform = Mat4.scale(4.5, 0.1, 4.5).times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
+        water_transform.pre_multiply(Mat4.translation(this.baseX, 3, this.baseZ));
+        // shapes.cylinder.draw(webgl_manager, uniform, water_transform, {...materials.plastic, color: blue});
+        shapes.cylinder.draw(webgl_manager, uniform, water_transform, materials.water);
 
         for (let i = 0; i < this.numStreams; i++) {
             for(let j = 0; j < this.numDrops; j++) {
                 const pos = this.drops[i][j].pos;
-                let model_transform = Mat4.scale(0.1, 0.1, 0.1);
+                let model_transform = Mat4.scale(0.3, 0.3, 0.3);
                 model_transform.pre_multiply(Mat4.translation(pos[0], pos[1], pos[2]));
-                shapes.ball.draw(webgl_manager, uniform, model_transform, {...materials.plastic, color: blue});
+                shapes.ball.draw(webgl_manager, uniform, model_transform, materials.water);
             }
         }
     }

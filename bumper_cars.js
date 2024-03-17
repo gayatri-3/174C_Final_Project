@@ -104,6 +104,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
            'sky': new defs.Subdivision_Sphere(4),
           'fence' : new Shape_From_File("./assets/fence/fence.obj"),
           'human': new Articulated_Human(),
+          'ferris-wheel-base' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel2.obj"),
+          'ferris-wheel-car' : new Shape_From_File("./assets/ferris_wheel/ferris_wheel_car.obj"),
+          'mascot-head' : new Shape_From_File("./assets/mascot/mascot.obj"),
           'cylinder' : new defs.Rounded_Capped_Cylinder(50, 32, [[0, 10], [0, 5]]),
           'cone' : new defs.Rounded_Closed_Cone(50, 4, [[0, 10], [0, 5]])
         };
@@ -124,6 +127,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.materials.bumper_car_floor = { shader: phong, ambient: .2, diffusivity: 1, specularity: .5, color: color( .64,.64,.64,1 ) }
         this.materials.metal   = { shader: phong, ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) }
         this.materials.rgb = { shader: tex_phong, ambient: .5, texture: new Texture( "assets/rgb.jpg" ) }
+        this.materials.stone = {shader: tex_phong, ambient: 1, texture: new Texture("assets/stone.png")}
+        this.materials.water = {shader: tex_phong, ambient: 1, diffusivity: 1, specularity: .5, texture: new Texture("assets/water.png")}
         this.materials.sky = {shader: tex_phong, ambient: 1, texture: new Texture("assets/sky.png")}
 
         //carnival stands materials
@@ -154,6 +159,10 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.t_sim = 0;
         this.step_t = 0.001;
         this.sim_t = 0;
+        this.random_colors = [];
+        for (var i = 0; i < 8; i++) {
+          this.random_colors.push(color(Math.random(), Math.random(), Math.random(), 1)); // Adjust the range as needed
+        }
 /*
         const curve_fn = (t) => this.spline.get_position(t);
         this.curve = new Curve_Shape(curve_fn, this.sample_cnt);
@@ -245,9 +254,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // comment
         this.spline2 = new Spline();
-        this.spline2.add_point(5, 25.0, 62.15, -2, 0.0, 0.0);
-        this.spline2.add_point(5, 15.0, 62.15, 2, 0.0, 0.0);
-        this.spline2.add_point(5, 25.0, 62.15, 4, 0.0, 0.0);
+        this.spline2.add_point(-3, 25.0, 62.15, -2, 0.0, 0.0);
+        this.spline2.add_point(-3, 15.0, 62.15, 2, 0.0, 0.0);
+        this.spline2.add_point(-3, 25.0, 62.15, 4, 0.0, 0.0);
 
         const curve_fn = (t) => this.spline.get_position(t);
         const curve_fn2 = (t) => this.spline2.get_position(t);
@@ -280,7 +289,8 @@ const Bumper_cars_base = defs.Bumper_cars_base =
           // perspective() are field of view, aspect ratio, and distances to the near plane and far plane.
 
           // !!! Camera changed here
-          Shader.assign_camera( Mat4.look_at (vec3 (25, 25, 25), vec3 (10, 15, 0), vec3 (0, 1, 0)), this.uniforms );
+          this.initial_camera_location = Mat4.look_at(vec3 (-10, 30, 35), vec3 (0, 20, 10), vec3 (0, 1, 0));
+          Shader.assign_camera( this.initial_camera_location, this.uniforms );
         }
         this.uniforms.projection_transform = Mat4.perspective( Math.PI/4, caller.width/caller.height, 1, 100 );
 
@@ -313,6 +323,19 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.shapes.fence.draw(caller, this.uniforms, fence3_transform, this.materials.bumper_car_floor);
         let fence4_transform = Mat4.identity().times(Mat4.translation(-9, 0, -6)).times(Mat4.scale(4.5, 5, 4.5)).times(Mat4.rotation(83.25, 0, 1, 0));
         this.shapes.fence.draw(caller, this.uniforms, fence4_transform, this.materials.bumper_car_floor);
+
+        // ferris wheel init
+        this.ferris_wheel_base_transform = Mat4.identity().times(Mat4.translation(25, 20, 1)).times(Mat4.scale(10, 10, 10));
+        this.ferris_wheel_car_transforms = [
+          Mat4.identity().times(Mat4.translation(25, 15, 19)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 5, 12)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 2, 1)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 5, -10)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 15, -15)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 27, -10)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 33, 1)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+          Mat4.identity().times(Mat4.translation(25, 28, 12)).times(Mat4.scale(3, 3, 3)).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)),
+        ];
       }
     }
 
@@ -467,26 +490,59 @@ export class Bumper_cars extends Bumper_cars_base
     }
 
 
+    // ferris wheel
+    // ferris wheel center: 25, 20, 1
+    this.ferris_wheel_base_transform = this.ferris_wheel_base_transform.times(Mat4.rotation(t / 2, 1, 0, 0));
+    this.shapes['ferris-wheel-base'].draw(caller, this.uniforms, this.ferris_wheel_base_transform, this.materials.bumper_car_floor);
+    this.shapes.box.draw(caller, this.uniforms, Mat4.identity().pre_multiply(Mat4.translation(18, 3, -2).times(Mat4.scale(1, 15, 1))).times(Mat4.rotation(45, 1, 0, 0)), this.materials.bumper_car_floor);
+    this.shapes.box.draw(caller, this.uniforms, Mat4.identity().pre_multiply(Mat4.translation(18, 3, 4).times(Mat4.scale(1, 15, 1))).times(Mat4.rotation(-45, 1, 0, 0)), this.materials.bumper_car_floor);
+    this.ferris_wheel_car_transforms = [
+      this.ferris_wheel_car_transforms[0].pre_multiply(Mat4.translation(0, 2 + 15.3 * Math.cos((t / 2)),  -18 + (5 * Math.PI * Math.sin((t / 2))))),
+      this.ferris_wheel_car_transforms[1].pre_multiply(Mat4.translation(0, 12 + 15.3 * Math.cos(Math.PI + (t / 2)),  -12 + (5 * Math.PI * Math.sin(Math.PI + (t / 2))))),
+      this.ferris_wheel_car_transforms[2].pre_multiply(Mat4.translation(0, 15 + 15.3 * Math.cos((5 * Math.PI / 4) + (t / 2)),   + (5 * Math.PI * Math.sin((5 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[3].pre_multiply(Mat4.translation(0, 12 + 15.3 * Math.cos((3 * Math.PI / 4) + (t / 2)),  10 + (5 * Math.PI * Math.sin((3 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[4].pre_multiply(Mat4.translation(0, 2 + 15.3 * Math.cos((6 * Math.PI / 4) + (t / 2)),  16 + (5 * Math.PI * Math.sin((6 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[5].pre_multiply(Mat4.translation(0, -10 + 15.3 * Math.cos((2 * Math.PI / 4) + (t / 2)),  11 + (5 * Math.PI * Math.sin((2 * Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[6].pre_multiply(Mat4.translation(0, -16 + 15 * Math.cos((Math.PI / 4) + (t / 2)),  0 + (5 * Math.PI * Math.sin((Math.PI / 4) + (t / 2))))),
+      this.ferris_wheel_car_transforms[7].pre_multiply(Mat4.translation(0, -12 + 15 * Math.cos((7 * Math.PI / 4) + (t / 2)),  -11 + (5 * Math.PI * Math.sin((7 * Math.PI / 4) + (t / 2))))),
+    ]
+    for (let i = 0; i < this.ferris_wheel_car_transforms.length; i++){
+      this.shapes['ferris-wheel-car'].draw(caller, this.uniforms, this.ferris_wheel_car_transforms[i], {...this.materials.metal, color : this.random_colors[i]});
+    }
+
     // animatronic
+    // mascot
+    let head_transform = Mat4.scale(2, 2, 2).pre_multiply(Mat4.translation(-3, 17, 35).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes['mascot-head'].draw(caller, this.uniforms, head_transform, {...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1) });
+    let eye1_transform = Mat4.scale(0.2, 0.2, 0.2).pre_multiply(Mat4.translation(-4, 17, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, eye1_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let eye2_transform = Mat4.scale(0.2, 0.2, 0.2).pre_multiply(Mat4.translation(-2, 17, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, eye2_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let mouth_transform = Mat4.scale(0.4, 0.3, 0.7).pre_multiply(Mat4.translation(-3, 16.5, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, mouth_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let mouth2_transform = Mat4.scale(0.2, 0.05, 0.7).pre_multiply(Mat4.translation(-3.1, 15.5, 33.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.box.draw(caller, this.uniforms, mouth2_transform, {...this.materials.plastic, color : color(0, 0, 0, 1) });
+    let belly_transform = Mat4.scale(1, 3, 1.5).pre_multiply(Mat4.translation(-3.1, 10, 34.5).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)));
+    this.shapes.ball.draw(caller, this.uniforms, belly_transform, {...this.materials.plastic, color : flesh });
     let lu_leg_transform = Mat4.scale(0.4, 1.6, .6);
     lu_leg_transform.pre_multiply(Mat4.translation(-4.2, 5, 35));
-    this.shapes.ball.draw(caller, this.uniforms, lu_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, lu_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let ll_leg_transform = Mat4.scale(0.4, 2, .2);
     ll_leg_transform.pre_multiply(Mat4.translation(-4.2, 1.8, 35));
-    this.shapes.ball.draw(caller, this.uniforms, ll_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, ll_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let ru_leg_transform = Mat4.scale(0.4, 1.6, .6);
     ru_leg_transform.pre_multiply(Mat4.translation(-1.8, 5, 35));
-    this.shapes.ball.draw(caller, this.uniforms, ru_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, ru_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let rl_leg_transform = Mat4.scale(0.4, 2, .2);
     rl_leg_transform.pre_multiply(Mat4.translation(-1.8, 1.8, 35));
-    this.shapes.ball.draw(caller, this.uniforms, rl_leg_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, rl_leg_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let l_foot_transform = Mat4.scale(1, 1, 1);
     l_foot_transform.pre_multiply(Mat4.translation(-4.2, 0.6, 34.65));
-    this.shapes.ball.draw(caller, this.uniforms, l_foot_transform, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, l_foot_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
     let r_foot_transform = Mat4.scale(1, 1, 1);
     r_foot_transform.pre_multiply(Mat4.translation(-1.8, 0.6, 34.65));
-    this.shapes.ball.draw(caller, this.uniforms, r_foot_transform, { ...this.materials.flesh, color : flesh});
-    this.human.draw(caller, this.uniforms, { ...this.materials.flesh, color : flesh});
+    this.shapes.ball.draw(caller, this.uniforms, r_foot_transform, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
+    this.human.draw(caller, this.uniforms, { ...this.materials.flesh, color : color(158/255, 107/255, 79/255, 1)});
 
     const dt_adjusted = Math.min(1 / 30, this.uniforms.animation_delta_time / 1000);
     const t_n = t + dt_adjusted;
@@ -546,7 +602,20 @@ export class Bumper_cars extends Bumper_cars_base
     this.key_triggered_button("Reset Bumper Cars", ["Shift", "R"], this.reset_cars);
     this.new_line();
     this.key_triggered_button("Fireworks", ["f"], this.start_fireworks.bind(this));
+    this.new_line();
+    this.key_triggered_button("Ride Rollercoaster", ["R"], this.ride_coaster());
+    this.new_line();
+    this.key_triggered_button("View Main Scene", ["V"], this.view_main_scene());
   }
+
+  ride_coaster(){
+
+  }
+
+  view_main_scene(){
+    //Shader.assign_camera( Mat4.look_at (vec3 (25, 25, -20), vec3 (0, 10, 0), vec3 (0, 1, 0)), this.uniforms );
+  }
+
 
   reset_cars(){
     this.starting_rot_ang = 1/50;
@@ -560,7 +629,7 @@ export class Bumper_cars extends Bumper_cars_base
 
   start_fireworks() {
     this.fireworks_animation = true;
-    this.fireworks = new FireworksDisplay(20, 100, 20, 5);
+    this.fireworks = new FireworksDisplay(20, 100, 20, 2);
     this.night = true;
     this.fireworks_animation_counter = 0;
   }
