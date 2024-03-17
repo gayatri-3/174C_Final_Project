@@ -244,7 +244,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         //this.fireworks = new FireworksDisplay(10, 10, 10, 2);
 
         // carnival init
-        this.carnival_stand = new CarnivalStand();
+        this.carnival_stand_tickets = new CarnivalStand();
+        this.carnival_stand_icecream = new CarnivalStand();
+        this.carnival_stand_popcorn = new CarnivalStand();
 
         // animatronic
         this.spline = new Spline();
@@ -405,8 +407,15 @@ export class Bumper_cars extends Bumper_cars_base
     //Rollercoaster
     this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
 
-    let carnival_stand_transform = Mat4.identity().times(Mat4.translation(1,1,1));
-    this.carnival_stand.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "ice_cream");
+    let carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,0));
+    this.carnival_stand_tickets.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "tickets");
+
+    carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,10));
+    this.carnival_stand_icecream.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "ice_cream");
+
+    carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,20));
+    this.carnival_stand_popcorn.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "popcorn");
+
 
     // BUMPER CARS!!!!
     let friction = 1/10000;
@@ -629,7 +638,7 @@ export class Bumper_cars extends Bumper_cars_base
 
   start_fireworks() {
     this.fireworks_animation = true;
-    this.fireworks = new FireworksDisplay(20, 100, 20, 2);
+    this.fireworks = new FireworksDisplay(30, 100, 20, 2);
     this.night = true;
     this.fireworks_animation_counter = 0;
   }
