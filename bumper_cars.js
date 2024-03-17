@@ -368,6 +368,9 @@ export class Bumper_cars extends Bumper_cars_base
 
     //Fountain with water drops
     this.fountain.draw(caller, this.uniforms, this.shapes, this.materials);
+    let base_transform = Mat4.scale(0.5, 0.3, 0.1).times(Mat4.rotation(-90, 0, 1, 0));
+    base_transform.pre_multiply(Mat4.translation(-25, 2, 0));
+    this.shapes.cylinder.draw(caller, this.uniforms, base_transform, {...this.materials.plastic, color: red});
 
     let dt = 1/60;
     dt = Math.min(1/30, dt);
@@ -599,7 +602,7 @@ export class Bumper_cars extends Bumper_cars_base
 
   start_fireworks() {
     this.fireworks_animation = true;
-    this.fireworks = new FireworksDisplay(20, 100, 30, 2);
+    this.fireworks = new FireworksDisplay(20, 100, 30, w);
   }
 
   parse_commands() {

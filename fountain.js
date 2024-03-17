@@ -76,16 +76,17 @@ export class Fountain {
         this.numStreams = 8;
         this.numDrops = 10;
         this.drops = [];
+        this.baseX = -25;
+        this.baseY = 2;
+        this.baseZ = 0;
     }
 
     init() {
         for(let i = 0; i < this.numStreams; i++) {
-            let baseX = -25;
-            let baseY = 2;
-            let baseZ = 0;
+
             let yscale = 3;
             let xscale = 1;
-            let zscale = 1;
+            let zscale = 0.5;
             if(i >= this.numStreams/2) {
                 yscale *= (i % this.numStreams/2);
                 xscale *= (i % this.numStreams/2);
@@ -100,17 +101,17 @@ export class Fountain {
                 zscale *= -1;
             }
             this.fountain[i] = new BezierCurve();
-            this.fountain[i].add_point(baseX, baseY, baseZ);
-            this.fountain[i].add_point(baseX - 2*xscale, baseY + 1 + yscale, baseZ + zscale);
-            this.fountain[i].add_point(baseX - xscale, baseY + 2 + 2*yscale, baseZ + zscale);
-            this.fountain[i].add_point(baseX + xscale, baseY + yscale, baseZ);
+            this.fountain[i].add_point(this.baseX, this.baseY, this.baseZ);
+            this.fountain[i].add_point(this.baseX + 2*xscale, this.baseY + 1 + yscale, this.baseZ - zscale);
+            this.fountain[i].add_point(this.baseX + xscale, this.baseY + 2 + 2*yscale, this.baseZ - zscale);
+            this.fountain[i].add_point(this.baseX - xscale, this.baseY + yscale, this.baseZ);
 
             let curve_fn = (t) => this.fountain[i].get_position(t);
             this.curves[i] = new Curve_Shape(curve_fn, 1000);
 
             let drop = [];
             for(let j = 0; j < this.numDrops; j++) {
-                drop[j] = new Drop(baseX, baseY, baseZ);
+                drop[j] = new Drop(this.baseX, this.baseY, this.baseZ);
             }
             this.drops[i] = drop;
         }
@@ -134,6 +135,9 @@ export class Fountain {
 
         const blue = color(0, 0, 1, 1);
         const red = color(1, 0, 0, 1);
+
+        //draw base
+
 
         for (let i = 0; i < this.numStreams; i++) {
             for(let j = 0; j < this.numDrops; j++) {
