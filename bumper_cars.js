@@ -185,10 +185,17 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         const branchScaleFactor = 0.5; // Adjust the branch scaling factor
         const leafScaleFactor = 1; // Adjust the leaf scaling factor
         this.trees = [];
-        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-20, -1, -40)));
-        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(30, -1, -30)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-19, -1, -40)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(20, -1, -45)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(29, -1, -25)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(40, -1, 0)));
+        this.trees.push(new TreeDrawer(4, 2.3, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(40, -1, -10)));
+        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(40, -1, -20)));
+        this.trees.push(new TreeDrawer(3, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-28.5, -1, -28)));
+        this.trees.push(new TreeDrawer(3, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(10, -1, -10)));
+        this.trees.push(new TreeDrawer(3, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-10, -1, -10)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(20, -1, 30)));
-        this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-40, -1, -20)));
+        this.trees.push(new TreeDrawer(5, 2.3, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-40, -1, -20)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-20, -1, 35)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-45, -1, 0)));
         this.trees.push(new TreeDrawer(levels, branchLength, branchColor, leafColor, branchScaleFactor, leafScaleFactor, Mat4.translation(-45, -1, 15)));
@@ -214,15 +221,15 @@ const Bumper_cars_base = defs.Bumper_cars_base =
 
         // animatronic
         this.spline = new Spline();
-        this.spline.add_point(-8, 25.0, 62.15, 2, 0.0, 0.0);
-        this.spline.add_point(-6, 15.0, 62.15, -2, 0.0, 0.0);
-        this.spline.add_point(-8, 25.0, 62.15, -2, 0.0, 0.0);
+        this.spline.add_point(-8, 25.0, 55.15, 2, 0.0, 0.0);
+        this.spline.add_point(-6, 15.0, 55.15, -2, 0.0, 0.0);
+        this.spline.add_point(-8, 25.0, 55.15, -2, 0.0, 0.0);
 
         // comment
         this.spline2 = new Spline();
-        this.spline2.add_point(-3, 25.0, 62.15, -2, 0.0, 0.0);
-        this.spline2.add_point(-3, 15.0, 62.15, 2, 0.0, 0.0);
-        this.spline2.add_point(-3, 25.0, 62.15, 4, 0.0, 0.0);
+        this.spline2.add_point(-1, 23.0, 55.15, -1, 0.0, 0.0);
+        this.spline2.add_point(-3, 15.0, 55.15, 1, 0.0, 0.0);
+        this.spline2.add_point(-1, 23.0, 55.15, 1, 0.0, 0.0);
 
         const curve_fn = (t) => this.spline.get_position(t);
         const curve_fn2 = (t) => this.spline2.get_position(t);
@@ -231,7 +238,9 @@ const Bumper_cars_base = defs.Bumper_cars_base =
         this.curve2 = new Curve_Shape(curve_fn2, this.sample_cnt2);
 
         this.human = new Articulated_Human;
-        this.right_target_pos = vec3(-4.5, 12.0, 32.15);
+        // this.right_target_pos = vec3(-4.5, 12.0, 32.15);
+        this.left_target_pos = vec3(2.5, 12.0, 32.15);
+        this.left_target_pos = vec3(2.5, 12.0, 32.15);
       }
 
       render_animation( caller )
@@ -388,13 +397,13 @@ export class Bumper_cars extends Bumper_cars_base
     //Rollercoaster
     this.rollercoaster.draw(caller, this.uniforms, this.materials, this.shapes);
 
-    let carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,0));
+    let carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,-10));
     this.carnival_stand_tickets.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "tickets");
 
-    carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,10));
+    carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,0));
     this.carnival_stand_icecream.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "ice_cream");
 
-    carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,20));
+    carnival_stand_transform = Mat4.identity().times(Mat4.translation(-25,1,10));
     this.carnival_stand_popcorn.draw(caller, this.uniforms, this.shapes, carnival_stand_transform, this.materials, "popcorn");
 
 

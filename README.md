@@ -59,7 +59,7 @@ It initializes a specified number of fireworks with random positions within a de
 Each firework is then updated over time based on gravitational forces, with bursts triggered when a firework reaches its peak height. 
 When a burst occurs, additional particles are created to simulate the explosion effect. 
 
-5 **Inverse Kinematics:** We used the inverse kinematics algorithm to create a 
+5. **Inverse Kinematics:** We used the inverse kinematics algorithm to create a 
 teddy bear mascot dancing on a stage.
 
 ### Additional Elements
@@ -72,4 +72,4 @@ Branches are represented by particles connected by springs, with leaf particles 
 We used the shapes from the common-shapes.js file to crete a carnival stall using cylinders, cones, and cubes. 
 We added custom textures to enhance the carnival feel.
 
-3. **Feris Wheel**
+3. **Ferris Wheel**
